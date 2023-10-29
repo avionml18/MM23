@@ -14,7 +14,13 @@ import random
 # default size has to greater than 2
 # nxn -> Ex: DEFAULT_SIZE = 2 means 2x2 or only four squares (destination squares)
 # CAN'T BE AN ODD NUMBER -> Mazes never are
-DEFAULT_SIZE = 4
+
+# DEFAULT_SIZE = 4
+DEFAULT_SIZE = 6
+# DEFAULT_SIZE = 8
+# DEFAULT_SIZE = 16
+
+"SEED"
 
 
 # random.seed("random")
@@ -25,7 +31,7 @@ class Map:
     This is where the map of the bot and where the user can choose to make a starting map are housed
     """
 
-    def __init__(self):
+    def __init__(self, bool_t_f):
         """
         self.map = [[Square()] * DEFAULT_SIZE for i in range(DEFAULT_SIZE)]
         
@@ -38,15 +44,19 @@ class Map:
         
         """
         # Default map -> Clean slate
-        self.map = [[Square() for i in range(DEFAULT_SIZE)] for i in range(DEFAULT_SIZE)]
+        self.map = [[Square(bool_t_f) for i in range(DEFAULT_SIZE)] for i in range(DEFAULT_SIZE)]
         self.bot_loc_x, self.bot_loc_y = 0, 0
 
     def make_maze_map(self):
         self.make_starting_square()
         self.make_walls()
 
-    # Filling in the distance numbers of the maze
     def make_bot_map(self):
+        self.make_distance_nums()
+        self.make_out_walls()
+
+    # Filling in the distance numbers of the maze
+    def make_distance_nums(self):
 
         max_dist_index = DEFAULT_SIZE - 1
         half_dist_index = DEFAULT_SIZE // 2
@@ -54,9 +64,10 @@ class Map:
 
         # Logic that populates the distance numbers to the maze
         for i in range(DEFAULT_SIZE):
-            # use the previous starting row values if it's not the 1st iteration since the 1st iteration has a 0 at my_map[0][0]
+            # use the previous starting row values if it's not the 1st iteration since the 1st iteration has a 0 at
+            # my_map[0][0]
             if i != 0:
-                curr_dist = self.map[i - 1][0].distance
+                curr_dist = self.map[i - 1][0].get_distance()
             for j in range(DEFAULT_SIZE):
                 # Populating the first quadrant of the maze with the proper numbers
                 square_obj = self.map[i][j]
@@ -66,11 +77,11 @@ class Map:
                         square_obj.set_distance(curr_dist)
                     # Copy all column numbers before the halfway column of the maze
                     else:
-                        cpy_distance_cols = self.map[i][max_dist_index - j].distance
+                        cpy_distance_cols = self.map[i][max_dist_index - j].get_distance()
                         square_obj.set_distance(cpy_distance_cols)
                 # Copy all rows above the halfway row of the maze
                 else:
-                    cpy_distance_rows = self.map[max_dist_index - i][j].distance
+                    cpy_distance_rows = self.map[max_dist_index - i][j].get_distance()
                     square_obj.set_distance(cpy_distance_rows)
 
     def make_starting_square(self):
@@ -84,31 +95,129 @@ class Map:
         self.bot_loc_x, self.bot_loc_y = x, y
 
     def make_walls(self):
+
+        pass
+
+    def make_out_walls(self):
         """
-        This will edit the maze's map to have squares that will have walls in its values
+        This will edit the maze's map to have squares that will have outside walls in its values
 
         :return: None
         """
 
         max_dist_index = DEFAULT_SIZE - 1
-        half_dist_index = DEFAULT_SIZE // 2
+        # half_dist_index = DEFAULT_SIZE // 2
 
         """ ALWAYS Check to make any adjacent WALLS have the SAME value """
 
         # Condition for the outside walls
-        for i in range(DEFAULT_SIZE):
-            for j in range(DEFAULT_SIZE):
-                pass
+        num_squares = 0
 
-        # Condition for the destination square
-        # There's one opening
-        total_walls_dest = 8
-        for i in range(DEFAULT_SIZE):
-            for j in range(DEFAULT_SIZE):
-                if (i == half_dist_index or i == half_dist_index - 1) and \
-                        (j == half_dist_index or j == half_dist_index - 1):
-                    pass
-        # Only activate or make walls "True"
+        # bool_list = [True, False]
+
+        min_iterator_i = -1
+        i = 0
+        max_iterator_i = DEFAULT_SIZE
+        flag_i = True
+        # flag_i_start = True
+
+        min_iterator_j = -1
+        j = 0
+        max_iterator_j = 1
+        flag_j = True
+        flag_j_zero = True
+
+        flag_exit = False
+
+        while num_squares < DEFAULT_SIZE ** 2 - (DEFAULT_SIZE - 2) ** 2:
+
+            while min_iterator_i < i < max_iterator_i:
+                if flag_j_zero:
+                    j = 0
+                elif j > max_dist_index:
+                    j = max_dist_index
+                while min_iterator_j < j < max_iterator_j:
+
+                    north, south, west, east = False, False, False, False
+
+                    if num_squares == 0:
+                        north = True
+                        west = True
+
+                    # j will not change when going down the left outer wall
+                    elif (max_dist_index * 0) < num_squares < (max_dist_index * 1):
+                        west = True
+
+                    elif num_squares == (max_dist_index * 1):
+                        west = True
+                        south = True
+                        # update iterators
+                        max_iterator_j = DEFAULT_SIZE
+                        flag_j_zero = False
+                        # flag_i_start = False
+
+                    elif (max_dist_index * 1) < num_squares < (max_dist_index * 2):
+                        south = True
+
+                    elif num_squares == (max_dist_index * 2):
+                        south = True
+                        east = True
+                        # update iterators
+                        flag_i = not flag_i
+
+                    elif (max_dist_index * 2) < num_squares < (max_dist_index * 3):
+                        east = True
+
+                    elif num_squares == (max_dist_index * 3):
+                        east = True
+                        north = True
+                        # update iterators
+                        flag_j = not flag_j
+
+                    elif (max_dist_index * 3) < num_squares < (max_dist_index * 4):
+                        north = True
+
+                    else:
+                        flag_exit = True
+
+                    if not flag_exit:
+                        dir_tuple = north, south, west, east
+                        square_obj = self.map[i][j]
+                        square_obj.set_walls(dir_tuple)
+                        # self.check_set_walls(square_obj.get_walls(), (i, j))
+                        num_squares += 1
+
+                    if flag_j:
+                        j += 1
+                    else:
+                        j -= 1
+
+                if flag_i:
+                    i += 1
+                else:
+                    i -= 1
+
+    def check_set_walls(self, dir_tuple, x_y_corr):
+        x, y = x_y_corr
+        north, south, east, west = dir_tuple
+
+        # Check to see if the wall that is parallel to the set one is within bounds
+        # If it is, set the wall so the two parallel walls are true -> thus are one wall
+        if north and 0 < (x - 1):
+            square_obj_above = self.map[x - 1][y]
+            square_obj_above.set_south()
+
+        elif south and (x + 1) < DEFAULT_SIZE:
+            square_obj_below = self.map[x + 1][y]
+            square_obj_below.set_north()
+
+        elif west and 0 < (y - 1):
+            square_obj_left = self.map[x][y - 1]
+            square_obj_left.set_east()
+
+        elif east and (y + 1) < DEFAULT_SIZE:
+            square_obj_right = self.map[x][y + 1]
+            square_obj_right.set_west()
 
     def set_bot_loc(self, bot_loc):
         self.bot_loc_x, self.bot_loc_y = bot_loc
@@ -120,7 +229,7 @@ class Map:
     def __str__(self):
         for i in range(DEFAULT_SIZE):
             for j in range(DEFAULT_SIZE):
-                print(self.map[i][j].distance, end=' ')
+                print(self.map[i][j].get_distance(), end=' ')
             print()
         # Compiler yells for not returning string type
         return "Above is the maze's grid\n"
@@ -131,13 +240,13 @@ class Square:
     A square class, the properties of each square in the maze
     """
 
-    def __init__(self):
+    def __init__(self, bool_t_f=False):
         # self.is_dest = 0
         self.is_start = False
-        self.w_north = False
-        self.w_south = False
-        self.w_east = False
-        self.w_west = False
+        self.w_north = bool_t_f
+        self.w_south = bool_t_f
+        self.w_west = bool_t_f
+        self.w_east = bool_t_f
         self.is_explore = False
         self.distance = 0
         # Is the mouse supposed to have the shortest route?
@@ -149,7 +258,19 @@ class Square:
         self.set_distance(distance)
 
     def set_walls(self, dir_tuple):
-        self.w_north, self.w_south, self.w_east, self.w_west = dir_tuple
+        self.w_north, self.w_south, self.w_west, self.w_east = dir_tuple
+
+    def set_north(self):
+        self.w_north = True
+
+    def set_south(self):
+        self.w_south = True
+
+    def set_west(self):
+        self.w_west = True
+
+    def set_east(self):
+        self.w_east = True
 
     def set_explore(self, explore):
         self.is_explore = explore
@@ -158,16 +279,13 @@ class Square:
         self.distance = distance
 
     def get_walls(self):
-        return self.w_north, self.w_south, self.w_east, self.w_west
+        return self.w_north, self.w_south, self.w_west, self.w_east
 
     def get_explore(self):
         return self.is_explore
 
     def get_distance(self):
         return self.distance
-
-    def check_update_walls(self):
-        pass
 
     def __str__(self):
         return str(self.distance)
@@ -186,7 +304,7 @@ class Bot:
         self.go = False
 
         """ bot_map is where the bot is finding a route. It does not know of walls until it hits one """
-        self.bot_map = Map()
+        self.bot_map = Map(False)
         self.bot_map.make_bot_map()
 
     def move(self):
@@ -207,16 +325,19 @@ class Bot:
     def call_set_square(self, dir_tuple, explored, distance, x_y_corr):
         map_object = self.bot_map
         x_corr, y_corr = x_y_corr
-        square_object = map_object.map[x_corr][y_corr]
-        square_object.set_square(dir_tuple, explored, distance)
+        square_obj = map_object.map[x_corr][y_corr]
+        square_obj.set_square(dir_tuple, explored, distance)
 
     def __str__(self):
         for i in range(DEFAULT_SIZE):
             for j in range(DEFAULT_SIZE):
-                print(self.bot_map.map[i][j].distance, end=' ')
+                print(self.bot_map.map[i][j].get_distance(), end=' ')
             print()
+
+        loc_x, loc_y = self.bot_map.get_bot_loc()
         str_bot = (f"Above is the bot's starting grid"
-                   f"\nStarting square is row:{self.bot_map.bot_loc_x}\tcol:{self.bot_map.bot_loc_y}")
+                   f"\nStarting square is row:{loc_x}\tcol:{loc_y}")
+
         return str_bot
 
 
@@ -231,25 +352,23 @@ def run_flood_algo():
 
 def run_depth_search_algo():
     """
-    This is where the Depth First Search algorithm and the arithmetic behind it is housed
-    Depth first search, bot goes -> intersection -> random direction -- if deadened --> go back to intersection -> repeat
-    :return:
+    This is where the Depth First Search algorithm and the arithmetic behind it is housed Depth first search,
+    bot goes -> intersection -> random direction -- if deadened --> go back to intersection -> repeat :return:
     """
     pass
 
 
 def run_whole_maze_algo():
     """
-    This is where the Whole Maze algorithm and the arithmetic behind it is housed
-    whole-maze is similar to depth first search...We want to search as many possible paths and ideally get back to the start
-    :return:
+    This is where the Whole Maze algorithm and the arithmetic behind it is housed whole-maze is similar to depth
+    first search...We want to search as many possible paths and ideally get back to the start :return:
     """
     pass
 
 
 if __name__ == "__main__":
     # Make an instance of Map to represent the actual maze
-    maze = Map()
+    maze = Map(True)
     maze.make_maze_map()
 
     # Make a bot instance to represent the bot itself
@@ -257,5 +376,4 @@ if __name__ == "__main__":
     # Set the bot's starting square to the same starting square in the maze
     # Make the bot's map by populating with the distance numbers
     bot.bot_map.set_bot_loc(maze.get_bot_loc())
-    bot.bot_map.make_bot_map()
     print(bot)
