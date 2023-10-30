@@ -11,7 +11,7 @@ Description:    This file will simulate the flood algorithm through terminal
 
 import random
 
-# default size has to greater than 2
+# Default size has to greater than 2
 # nxn -> Ex: DEFAULT_SIZE = 2 means 2x2 or only four squares (destination squares)
 # CAN'T BE AN ODD NUMBER -> Mazes never are
 
@@ -20,10 +20,18 @@ DEFAULT_SIZE = 6
 # DEFAULT_SIZE = 8
 # DEFAULT_SIZE = 16
 
-"SEED"
+MAKE_WALLS_USER = False
+
+# Consistent location of starting location and anywhere random is used (Depth First Search Algo)
+random.seed("random")
+from enum import Enum
 
 
-# random.seed("random")
+class Direction(Enum):
+    up = 1
+    down = 2
+    left = 3
+    right = 4
 
 
 class Map:
@@ -31,7 +39,7 @@ class Map:
     This is where the map of the bot and where the user can choose to make a starting map are housed
     """
 
-    def __init__(self, bool_t_f):
+    def __init__(self, bool_t_f=False):
         """
         self.map = [[Square()] * DEFAULT_SIZE for i in range(DEFAULT_SIZE)]
         
@@ -49,7 +57,11 @@ class Map:
 
     def make_maze_map(self):
         self.make_starting_square()
-        self.make_walls()
+        self.make_out_walls()
+        if MAKE_WALLS_USER:
+            self.make_walls_user()
+        else:
+            self.make_walls_file()
 
     def make_bot_map(self):
         self.make_distance_nums()
@@ -89,14 +101,72 @@ class Map:
         list_loc = [(0, 0), (0, DEFAULT_SIZE - 1), (DEFAULT_SIZE - 1, 0), (DEFAULT_SIZE - 1, DEFAULT_SIZE - 1)]
 
         x, y = random.choice(list_loc)
+        # ****Should I make this a setter?
         self.map[x][y].is_start = True
+        self.map[x][y].set_explore(True)
 
         # Saving bot's starting location in x and y coordinates
         self.bot_loc_x, self.bot_loc_y = x, y
 
-    def make_walls(self):
+    def make_walls_file(self):
+        print(self.__str__())
+        # Use distance numbers as a way to describe the number of walls you've changed per square
 
-        pass
+        filename = "maze1.txt"
+        file1 = open(filename, "r")
+
+        for line in file1.readlines():
+            x, y, north, south, west, east = line.strip('\n').split()
+            x = int(x)
+            y = int(y)
+            north = bool(int(north))
+            south = bool(int(south))
+            west = bool(int(west))
+            east = bool(int(east))
+
+            x_y_corr = x, y
+            dir_tuple = north, south, west, east
+
+            sq_obj = self.map[x][y]
+            sq_obj.set_square(dir_tuple, False, 1)
+            self.check_set_walls(dir_tuple, x_y_corr)
+
+        file1.close()
+
+    def make_walls_user(self):
+        print(self.__str__())
+        # Use distance numbers as a way to describe the number of walls you've changed per square
+
+        filename = ""
+        file1 = open(filename, "a")
+
+        user_input = input("What walls would you like to change (\"s\" or \"stop\" to stop)?\n"
+                           "(Ex: x y north:[1\\0] south:[1\\0] west:[1\\0] east:[1\\0])\n"
+                           "(1 means to put a wall, 0 means to remove a wall):\n")
+
+        while user_input not in ["s", "stop"]:
+            file1.write(user_input)
+            file1.write("\n")
+            user_list = user_input.split()
+
+            x_y_corr = int(user_list[0]), int(user_list[1])
+            x, y = x_y_corr
+            dir_tuple = bool(int(user_list[2])), bool(int(user_list[3])), bool(int(user_list[4])), bool(
+                int(user_list[5]))
+
+            sq_obj = self.map[x][y]
+            sq_obj.set_square(dir_tuple, False, 1)
+            self.check_set_walls(dir_tuple, x_y_corr)
+
+            print()
+            print(self.__str__())
+            print(f"You've changed: coordinate: {x}{y}\n\n{sq_obj}\n")
+
+            user_input = input("What walls would you like to change (\"s\" or \"stop\" to stop)?\n"
+                               "(Ex: x y north:[1\\0] south:[1\\0] west:[1\\0] east:[1\\0])\n"
+                               "(1 means to put a wall, 0 means to remove a wall):\n")
+
+        file1.close()
 
     def make_out_walls(self):
         """
@@ -197,27 +267,33 @@ class Map:
                 else:
                     i -= 1
 
-    def check_set_walls(self, dir_tuple, x_y_corr):
-        x, y = x_y_corr
+    def check_set_walls(self, dir_tuple, x_y_coor):
+        """
+        Check to see if the wall that is parallel to the set one is within bounds
+            If it is, set the wall so the two parallel walls are true -> thus are one wall
+
+        :param dir_tuple: direction tuple that holds as "north, south, west, east"
+        :param x_y_coor: x and y coordinate tuple that will unpack to x, y
+        :return: None
+        """
+        x, y = x_y_coor
         north, south, east, west = dir_tuple
 
-        # Check to see if the wall that is parallel to the set one is within bounds
-        # If it is, set the wall so the two parallel walls are true -> thus are one wall
-        if north and 0 < (x - 1):
+        if north and -1 < (x - 1):
             square_obj_above = self.map[x - 1][y]
-            square_obj_above.set_south()
+            square_obj_above.set_south(north)
 
-        elif south and (x + 1) < DEFAULT_SIZE:
+        if south and (x + 1) < DEFAULT_SIZE:
             square_obj_below = self.map[x + 1][y]
-            square_obj_below.set_north()
+            square_obj_below.set_north(south)
 
-        elif west and 0 < (y - 1):
+        if west and -1 < (y - 1):
             square_obj_left = self.map[x][y - 1]
-            square_obj_left.set_east()
+            square_obj_left.set_east(west)
 
-        elif east and (y + 1) < DEFAULT_SIZE:
+        if east and (y + 1) < DEFAULT_SIZE:
             square_obj_right = self.map[x][y + 1]
-            square_obj_right.set_west()
+            square_obj_right.set_west(east)
 
     def set_bot_loc(self, bot_loc):
         self.bot_loc_x, self.bot_loc_y = bot_loc
@@ -260,17 +336,17 @@ class Square:
     def set_walls(self, dir_tuple):
         self.w_north, self.w_south, self.w_west, self.w_east = dir_tuple
 
-    def set_north(self):
-        self.w_north = True
+    def set_north(self, bool_val):
+        self.w_north = bool_val
 
-    def set_south(self):
-        self.w_south = True
+    def set_south(self, bool_val):
+        self.w_south = bool_val
 
-    def set_west(self):
-        self.w_west = True
+    def set_west(self, bool_val):
+        self.w_west = bool_val
 
-    def set_east(self):
-        self.w_east = True
+    def set_east(self, bool_val):
+        self.w_east = bool_val
 
     def set_explore(self, explore):
         self.is_explore = explore
@@ -288,7 +364,8 @@ class Square:
         return self.distance
 
     def __str__(self):
-        return str(self.distance)
+        sq_str = f"     {self.w_north}\n{self.w_west}\t{self.distance}\t{self.w_east}\n     {self.w_south}"
+        return sq_str
 
 
 class Bot:
@@ -322,10 +399,10 @@ class Bot:
 
     # The algorithm will pass in all parameters!!!
     # Possible error is that it's not passing by reference but by value
-    def call_set_square(self, dir_tuple, explored, distance, x_y_corr):
+    def call_set_square(self, dir_tuple, explored, distance, x_y_coor):
         map_object = self.bot_map
-        x_corr, y_corr = x_y_corr
-        square_obj = map_object.map[x_corr][y_corr]
+        x_coor, y_coor = x_y_coor
+        square_obj = map_object.map[x_coor][y_coor]
         square_obj.set_square(dir_tuple, explored, distance)
 
     def __str__(self):
@@ -341,13 +418,77 @@ class Bot:
         return str_bot
 
 
-def run_flood_algo():
+def run_flood_algo(bot, maze):
     """
     This is where the Flood-Fill algorithm and the arithmetic behind it is housed
     * There are better Flood-Fill Algorithms
     """
-    # do a quick fill in of pseudocode
-    pass
+    # Bot looks through all adjacent cells which aren't blocked by walls and choose the lowest distance values
+    # Turning take time thus if you have two choices, choose the one where the bot will not have to move much
+    # If run into a wall, update wall and distance values
+
+    # Every time the mouse moves:
+    #   Update the wall map
+    #   Flood the maze with new distance values -> Modified version = flood the necessary values
+    #   Decide which neighboring cell has the lowest distance value
+    #   Move to the neighboring cell with the lowest distance value
+
+    # Starting location of bot (5, 5)
+    x, y = maze_1.get_bot_loc()
+    # Assume it's in position to go straight from the start # Orientation Matters!!!
+    distance = bot.bot_map[x][y].get_distance()
+    while distance != 0:
+        possible_dir = []
+        # Analyze choices:
+        if -1 < (x - 1):
+            if bot.bot_map[x - 1][y].get_distance() < distance:
+                possible_dir.append(Direction.up.value)
+        if (x + 1) < DEFAULT_SIZE:
+            if bot.bot_map[x + 1][y].get_distance() < distance:
+                possible_dir.append(Direction.down.value)
+        if -1 < (y - 1):
+            if bot.bot_map[x][y - 1].get_distance() < distance:
+                possible_dir.append(Direction.left.value)
+        if (y + 1) < DEFAULT_SIZE:
+            if bot.bot_map[x][y + 1].get_distance() < distance:
+                possible_dir.append(Direction.right.value)
+
+        # Determine a direction by randomly selecting between two
+        # In reality, we would have a gyro or something to indicate the bot's orientation thus, that
+        #   would be a factor in this decision
+        dir_to_go = random.choice(possible_dir)
+
+        # Look in the actual maze for walls
+        north, south, west, east = maze_1.map[x][y].get_walls()
+        # Then tell the bot where to go in the actual maze
+        # If you hit a wall -> update the wall on the bot's map and update distance numbers for the bot and go again
+
+        if dir_to_go == 1 and not north:
+            x -= 1
+
+            # Go bot
+            bot.move()
+
+        elif dir_to_go == 2 and not south:
+            x += 1
+
+            # Go bot
+            bot.move()
+
+        elif dir_to_go == 3 and not west:
+            y -= 1
+
+            # Go bot
+            bot.move()
+
+        elif dir_to_go == 4 and not east:
+            y += 1
+
+            # Go bot
+            bot.move()
+
+        # update distance for possible next iteration
+        distance = bot.bot_map[x][y].get_distance()
 
 
 def run_depth_search_algo():
@@ -368,12 +509,16 @@ def run_whole_maze_algo():
 
 if __name__ == "__main__":
     # Make an instance of Map to represent the actual maze
-    maze = Map(True)
-    maze.make_maze_map()
+    maze_1 = Map()
+    maze_1.make_maze_map()
+    print(maze_1)
 
     # Make a bot instance to represent the bot itself
-    bot = Bot()
+    bot_1 = Bot()
     # Set the bot's starting square to the same starting square in the maze
     # Make the bot's map by populating with the distance numbers
-    bot.bot_map.set_bot_loc(maze.get_bot_loc())
-    print(bot)
+    bot_map_obj = bot_1.bot_map
+    bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
+    print(bot_1)
+
+    run_flood_algo(bot_1, maze_1)
