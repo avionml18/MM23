@@ -8,7 +8,7 @@ Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This file will simulate the flood algorithm through terminal
                 inputs and outputs
 """
-
+from enum import Enum
 import random
 
 # Default size has to greater than 2
@@ -24,14 +24,13 @@ MAKE_WALLS_USER = False
 
 # Consistent location of starting location and anywhere random is used (Depth First Search Algo)
 random.seed("random")
-from enum import Enum
 
 
 class Direction(Enum):
-    up = 1
-    down = 2
-    left = 3
-    right = 4
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
 
 
 class Map:
@@ -104,6 +103,8 @@ class Map:
         # ****Should I make this a setter?
         self.map[x][y].is_start = True
         self.map[x][y].set_explore(True)
+        # ****Should I make this a setter?
+        self.map[x][y].bot_here = True
 
         # Saving bot's starting location in x and y coordinates
         self.bot_loc_x, self.bot_loc_y = x, y
@@ -176,20 +177,14 @@ class Map:
         """
 
         max_dist_index = DEFAULT_SIZE - 1
-        # half_dist_index = DEFAULT_SIZE // 2
-
-        """ ALWAYS Check to make any adjacent WALLS have the SAME value """
 
         # Condition for the outside walls
         num_squares = 0
-
-        # bool_list = [True, False]
 
         min_iterator_i = -1
         i = 0
         max_iterator_i = DEFAULT_SIZE
         flag_i = True
-        # flag_i_start = True
 
         min_iterator_j = -1
         j = 0
@@ -295,6 +290,48 @@ class Map:
             square_obj_right = self.map[x][y + 1]
             square_obj_right.set_west(east)
 
+    def set_distance_nums(self, bot_x, bot_y):
+        bot_map = self.map
+        curr_sq = bot_map[bot_x][bot_y]
+        curr_dist = curr_sq.get_distance()
+
+        dist_list = []
+        north, south, west, east = curr_sq.get_walls()
+
+        # if there isn't a wall, then there's a neighboring cell to be checked thus add to dist_list
+        if not north:
+            dist_list.append(bot_map[bot_x - 1][bot_y].get_distance())
+        if not south:
+            dist_list.append(bot_map[bot_x + 1][bot_y].get_distance())
+        if not west:
+            dist_list.append(bot_map[bot_x][bot_y - 1].get_distance())
+        if not east:
+            dist_list.append(bot_map[bot_x][bot_y + 1].get_distance())
+
+        # min function to determine minimum distance, even if there's repeats
+        new_dist = min(dist_list) + 1
+
+        change = True
+        if curr_dist != new_dist:
+            curr_sq.set_distance(new_dist)
+        else:
+            change = False
+
+        # BASE CASE
+        if not change:
+            return
+        # RECURSIVE CASES
+        if not north:
+            self.set_distance_nums(bot_x - 1, bot_y)
+        if not south:
+            self.set_distance_nums(bot_x + 1, bot_y)
+        if not west:
+            self.set_distance_nums(bot_x, bot_y - 1)
+        if not east:
+            self.set_distance_nums(bot_x, bot_y + 1)
+
+        # return -> I think this happens by default
+
     def set_bot_loc(self, bot_loc):
         self.bot_loc_x, self.bot_loc_y = bot_loc
 
@@ -310,6 +347,15 @@ class Map:
         # Compiler yells for not returning string type
         return "Above is the maze's grid\n"
 
+    def __getitem__(self, index_x_y):
+        """
+        Returns a square object at index_x and index_y location
+        :param index_x_y: tuple - row and col value
+        :return: square object
+        """
+        index_x, index_y = index_x_y
+        return self.map[index_x][index_y]
+
 
 class Square:
     """
@@ -317,7 +363,7 @@ class Square:
     """
 
     def __init__(self, bool_t_f=False):
-        # self.is_dest = 0
+        self.is_dest = 0
         self.is_start = False
         self.w_north = bool_t_f
         self.w_south = bool_t_f
@@ -327,6 +373,8 @@ class Square:
         self.distance = 0
         # Is the mouse supposed to have the shortest route?
         self.shortest_route = 99
+        # Need a
+        self.bot_here = False
 
     def set_square(self, dir_tuple, explore, distance):
         self.set_walls(dir_tuple)
@@ -347,6 +395,9 @@ class Square:
 
     def set_east(self, bool_val):
         self.w_east = bool_val
+
+    def set_bot_here(self, bool_val):
+        self.bot_here = bool_val
 
     def set_explore(self, explore):
         self.is_explore = explore
@@ -381,14 +432,44 @@ class Bot:
         self.go = False
 
         """ bot_map is where the bot is finding a route. It does not know of walls until it hits one """
-        self.bot_map = Map(False)
+        self.bot_map: Map = Map()
         self.bot_map.make_bot_map()
 
-    def move(self):
-        self.go = True
+    def move(self, bot_new_x, bot_new_y, maze):
+        """
+        Move will actually move the bot in the algorithm then in the actual maze
+        :param bot_new_x: the x coordinate point for where the bot will move to
+        :param bot_new_y: the y coordinate point for where the bot will move to
+        :param maze: maze object that represents the maze in the real world
+        :return: None
+        """
+        # This is for telling the motors to start going for a certain amount.
+        # self.go = True
 
-    def stop(self):
-        self.go = False
+        # Gather original location data and update the next square location
+        bot_org_x, bot_org_y = self.bot_map.get_bot_loc()
+        x_y_coor = bot_new_x, bot_new_y
+        self.bot_map[bot_org_x, bot_org_y].set_bot_here(False)
+        self.bot_map[bot_new_x, bot_new_y].set_bot_here(True)
+        self.bot_map[bot_new_x, bot_new_y].set_explore(True)
+        self.bot_map.set_bot_loc(x_y_coor)
+
+        # Repeat what you did in the algorithm for moving in the actual maze
+        """
+        I assume someone where here is where we tell the bot to move in a forward direction
+        
+        There will be someone BEFORE this where we tell the bot to turn or orientate itself to the proper 
+            direction
+        """
+        maze.map[bot_org_x][bot_org_y].set_bot_here(False)
+        maze.map[bot_new_x][bot_new_y].set_bot_here(True)
+        maze.map[bot_new_x][bot_new_y].set_explore(True)
+        maze.set_bot_loc(x_y_coor)
+
+    # def stop(self):
+    #     # This is for telling the bot to simply stop moving.
+    #     self.go = False
+    #
 
     # Once direction is set, then tell the algo you're ready to go by calling function move
     def set_dir(self, up, down, left, right):
@@ -413,7 +494,7 @@ class Bot:
 
         loc_x, loc_y = self.bot_map.get_bot_loc()
         str_bot = (f"Above is the bot's starting grid"
-                   f"\nStarting square is row:{loc_x}\tcol:{loc_y}")
+                   f"\nCurrent location of bot is row:{loc_x}\tcol:{loc_y}")
 
         return str_bot
 
@@ -421,11 +502,17 @@ class Bot:
 def run_flood_algo(bot, maze):
     """
     This is where the Flood-Fill algorithm and the arithmetic behind it is housed
+        Flood-Fill Algo:
+            Bot looks through all adjacent cells which aren't blocked by walls and choose the lowest distance values
+            Turning take time thus if you have two choices, choose the one where the bot will not have to move much
+            If run into a wall, update wall and distance values
+
+    Flood-Fill Algorithm : Modified
     * There are better Flood-Fill Algorithms
+    :param bot: the bot object
+    :param maze: the maze object
+    :return: None
     """
-    # Bot looks through all adjacent cells which aren't blocked by walls and choose the lowest distance values
-    # Turning take time thus if you have two choices, choose the one where the bot will not have to move much
-    # If run into a wall, update wall and distance values
 
     # Every time the mouse moves:
     #   Update the wall map
@@ -433,62 +520,106 @@ def run_flood_algo(bot, maze):
     #   Decide which neighboring cell has the lowest distance value
     #   Move to the neighboring cell with the lowest distance value
 
+    bot_map_obj = bot.bot_map
     # Starting location of bot (5, 5)
-    x, y = maze_1.get_bot_loc()
-    # Assume it's in position to go straight from the start # Orientation Matters!!!
-    distance = bot.bot_map[x][y].get_distance()
+    x, y = bot_map_obj.get_bot_loc()
+    """Assume it's in position to go straight from the start # Orientation Matters!!!"""
+    distance = bot_map_obj[x, y].get_distance()
+    """Can change to recursion: f(org_x, org_y, dir:int, dest_found/distance)"""
     while distance != 0:
         possible_dir = []
-        # Analyze choices:
-        if -1 < (x - 1):
-            if bot.bot_map[x - 1][y].get_distance() < distance:
-                possible_dir.append(Direction.up.value)
-        if (x + 1) < DEFAULT_SIZE:
-            if bot.bot_map[x + 1][y].get_distance() < distance:
-                possible_dir.append(Direction.down.value)
-        if -1 < (y - 1):
-            if bot.bot_map[x][y - 1].get_distance() < distance:
-                possible_dir.append(Direction.left.value)
-        if (y + 1) < DEFAULT_SIZE:
-            if bot.bot_map[x][y + 1].get_distance() < distance:
-                possible_dir.append(Direction.right.value)
 
-        # Determine a direction by randomly selecting between two
-        # In reality, we would have a gyro or something to indicate the bot's orientation thus, that
-        #   would be a factor in this decision
+        north, south, west, east = bot_map_obj[x, y].get_walls()
+
+        # Analyze choices:
+        if -1 < (x - 1) and not north:
+            if bot_map_obj[x - 1, y].get_distance() < distance:
+                possible_dir.append(Direction.UP.value)
+        if (x + 1) < DEFAULT_SIZE and not south:
+            if bot_map_obj[x + 1, y].get_distance() < distance:
+                possible_dir.append(Direction.DOWN.value)
+        if -1 < (y - 1) and not west:
+            if bot_map_obj[x, y - 1].get_distance() < distance:
+                possible_dir.append(Direction.LEFT.value)
+        if (y + 1) < DEFAULT_SIZE and not east:
+            if bot_map_obj[x, y + 1].get_distance() < distance:
+                possible_dir.append(Direction.RIGHT.value)
+
+        # Determine a direction by randomly selecting between two (until orientation is ian added attribute of bot
+        # class)
+        # If you do this, make sure there is a maze to test this orientation attribute thoroughly
+        """
+        In reality, we would have a gyro or something to indicate the bot's orientation thus, that
+          would be a factor in this decision        
+        """
         dir_to_go = random.choice(possible_dir)
 
         # Look in the actual maze for walls
-        north, south, west, east = maze_1.map[x][y].get_walls()
+        north, south, west, east = maze.map[x][y].get_walls()
+
         # Then tell the bot where to go in the actual maze
-        # If you hit a wall -> update the wall on the bot's map and update distance numbers for the bot and go again
+        if dir_to_go == 1:
+            # If you don't hit a wall -> move to that location in the algorithm
+            if not north:
+                # Go bot
+                x -= 1
+                bot.move(x, y, maze)
+            # If you hit a wall -> update the wall on the bot's map
+            else:
+                bot_map_obj[x, y].set_north(north)
+                dir_tuple = north, south, west, east
+                x_y_coor = x, y
+                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
-        if dir_to_go == 1 and not north:
-            x -= 1
+                # Update distance numbers for the bot and go again
+                """
+                If a cell is not the destination cell, its value should
+                be one plus the minimum value of its open neighbors
+                
+                current cell/loc = min(neighbors not block by walls) + 1
+                if I change, check my neighbors not block by walls and repeat above
+                """
+                bot_map_obj.set_distance_nums(x, y)
 
-            # Go bot
-            bot.move()
+        elif dir_to_go == 2:
+            if not south:
+                x += 1
+                bot.move(x, y, maze)
+            else:
+                bot_map_obj[x, y].set_south(south)
+                dir_tuple = north, south, west, east
+                x_y_coor = x, y
+                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+                bot_map_obj.set_distance_nums(x, y)
 
-        elif dir_to_go == 2 and not south:
-            x += 1
+        elif dir_to_go == 3:
+            if not west:
+                y -= 1
+                bot.move(x, y, maze)
+            else:
+                bot_map_obj[x, y].set_west(west)
+                dir_tuple = north, south, west, east
+                x_y_coor = x, y
+                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+                bot_map_obj.set_distance_nums(x, y)
 
-            # Go bot
-            bot.move()
+        elif dir_to_go == 4:
+            if not east:
+                y += 1
+                bot.move(x, y, maze)
+            else:
+                bot_map_obj[x, y].set_east(east)
+                dir_tuple = north, south, west, east
+                x_y_coor = x, y
+                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+                bot_map_obj.set_distance_nums(x, y)
 
-        elif dir_to_go == 3 and not west:
-            y -= 1
-
-            # Go bot
-            bot.move()
-
-        elif dir_to_go == 4 and not east:
-            y += 1
-
-            # Go bot
-            bot.move()
-
+        # Check if distances change and if they do, update maze
         # update distance for possible next iteration
-        distance = bot.bot_map[x][y].get_distance()
+        distance = bot.bot_map[x, y].get_distance()
+
+        # bot.stop()
+    bot_map_obj[x, y].is_dest = True
 
 
 def run_depth_search_algo():
@@ -502,7 +633,11 @@ def run_depth_search_algo():
 def run_whole_maze_algo():
     """
     This is where the Whole Maze algorithm and the arithmetic behind it is housed whole-maze is similar to depth
-    first search...We want to search as many possible paths and ideally get back to the start :return:
+    first search...We want to search as many possible paths and ideally get back to the start
+
+    Looks for intersection and keeps looking for unexplored mazes
+
+    :return:
     """
     pass
 
@@ -522,3 +657,4 @@ if __name__ == "__main__":
     print(bot_1)
 
     run_flood_algo(bot_1, maze_1)
+    print(bot_1)
