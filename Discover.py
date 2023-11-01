@@ -1,12 +1,11 @@
 """
-File:           FloodAlgo
+File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  10/28/23
+Date (Update):  10/31/23
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
-Description:    This file will simulate the flood algorithm through terminal
-                inputs and outputs
+Description:    This file will simulate the algorithms through terminal
 """
 from enum import Enum
 import random
@@ -117,18 +116,29 @@ class Map:
         file1 = open(filename, "r")
 
         for line in file1.readlines():
-            x, y, north, south, west, east = line.strip('\n').split()
+            x, y, north_file, south_file, west_file, east_file = line.strip('\n').split()
             x = int(x)
             y = int(y)
-            north = bool(int(north))
-            south = bool(int(south))
-            west = bool(int(west))
-            east = bool(int(east))
+            north_file = bool(int(north_file))
+            south_file = bool(int(south_file))
+            west_file = bool(int(west_file))
+            east_file = bool(int(east_file))
 
             x_y_corr = x, y
-            dir_tuple = north, south, west, east
-
             sq_obj = self.map[x][y]
+
+            # Update dir_tuple to also contain any walls that may already be "True" from previous iteration
+            north_og, south_og, west_og, east_og = sq_obj.get_walls()
+            if north_og:
+                north_file = north_og
+            if south_og:
+                south_file = south_og
+            if west_og:
+                west_file = west_og
+            if east_og:
+                east_file = east_og
+            dir_tuple = north_file, south_file, west_file, east_file
+
             sq_obj.set_square(dir_tuple, False, 1)
             self.check_set_walls(dir_tuple, x_y_corr)
 
@@ -272,7 +282,7 @@ class Map:
         :return: None
         """
         x, y = x_y_coor
-        north, south, east, west = dir_tuple
+        north, south, west, east = dir_tuple
 
         if north and -1 < (x - 1):
             square_obj_above = self.map[x - 1][y]
@@ -330,8 +340,6 @@ class Map:
         if not east:
             self.set_distance_nums(bot_x, bot_y + 1)
 
-        # return -> I think this happens by default
-
     def set_bot_loc(self, bot_loc):
         self.bot_loc_x, self.bot_loc_y = bot_loc
 
@@ -373,7 +381,7 @@ class Square:
         self.distance = 0
         # Is the mouse supposed to have the shortest route?
         self.shortest_route = 99
-        # Need a
+        #
         self.bot_here = False
 
     def set_square(self, dir_tuple, explore, distance):
@@ -415,8 +423,12 @@ class Square:
         return self.distance
 
     def __str__(self):
-        sq_str = f"     {self.w_north}\n{self.w_west}\t{self.distance}\t{self.w_east}\n     {self.w_south}"
+        sq_str = f"     {self.w_north}     \n{self.w_west}\t{self.distance}\t{self.w_east}\n     {self.w_south}\n"
         return sq_str
+
+    # def __str__(self, corr):
+    #     sq_str = f"     {self.w_north}     \n{self.w_west}\t{corr}\t{self.w_east}\n     {self.w_south}\n"
+    #     return sq_str
 
 
 class Bot:
@@ -521,6 +533,7 @@ def run_flood_algo(bot, maze):
     #   Move to the neighboring cell with the lowest distance value
 
     bot_map_obj = bot.bot_map
+    bot_map = bot_map_obj.map
     # Starting location of bot (5, 5)
     x, y = bot_map_obj.get_bot_loc()
     """Assume it's in position to go straight from the start # Orientation Matters!!!"""
@@ -552,22 +565,38 @@ def run_flood_algo(bot, maze):
         In reality, we would have a gyro or something to indicate the bot's orientation thus, that
           would be a factor in this decision        
         """
+
         dir_to_go = random.choice(possible_dir)
 
+        print("******************************************")
+        for i in range(DEFAULT_SIZE):
+            for j in range(DEFAULT_SIZE):
+                num = bot_map_obj[i, j].get_distance()
+                print(num, end=' ')
+            print()
+
+        print(f"Location: {(x, y)}")
+        print(f"Walls: {bot_map_obj[x, y].get_walls()}")
+        print(f"Directions possible: {possible_dir}")
+        print(f"Distance: {distance}")
+        print(f"Direction to go: {dir_to_go}")
+
         # Look in the actual maze for walls
-        north, south, west, east = maze.map[x][y].get_walls()
+        north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
 
         # Then tell the bot where to go in the actual maze
         if dir_to_go == 1:
             # If you don't hit a wall -> move to that location in the algorithm
-            if not north:
+            if not north_maze:
                 # Go bot
                 x -= 1
                 bot.move(x, y, maze)
+                # bot.stop()
+
             # If you hit a wall -> update the wall on the bot's map
             else:
-                bot_map_obj[x, y].set_north(north)
-                dir_tuple = north, south, west, east
+                bot_map_obj[x, y].set_north(north_maze)
+                dir_tuple = bot_map[x][y].get_walls()
                 x_y_coor = x, y
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
@@ -577,39 +606,43 @@ def run_flood_algo(bot, maze):
                 be one plus the minimum value of its open neighbors
                 
                 current cell/loc = min(neighbors not block by walls) + 1
-                if I change, check my neighbors not block by walls and repeat above
+                if I change: check my neighbors not block by walls and repeat above
+                else: return to previous square 
                 """
                 bot_map_obj.set_distance_nums(x, y)
 
         elif dir_to_go == 2:
-            if not south:
+            if not south_maze:
                 x += 1
                 bot.move(x, y, maze)
+                # bot.stop()
             else:
-                bot_map_obj[x, y].set_south(south)
-                dir_tuple = north, south, west, east
+                bot_map_obj[x, y].set_south(south_maze)
+                dir_tuple = bot_map[x][y].get_walls()
                 x_y_coor = x, y
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
                 bot_map_obj.set_distance_nums(x, y)
 
         elif dir_to_go == 3:
-            if not west:
+            if not west_maze:
                 y -= 1
                 bot.move(x, y, maze)
+                # bot.stop()
             else:
-                bot_map_obj[x, y].set_west(west)
-                dir_tuple = north, south, west, east
+                bot_map_obj[x, y].set_west(west_maze)
+                dir_tuple = bot_map[x][y].get_walls()
                 x_y_coor = x, y
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
                 bot_map_obj.set_distance_nums(x, y)
 
         elif dir_to_go == 4:
-            if not east:
+            if not east_maze:
                 y += 1
                 bot.move(x, y, maze)
+                # bot.stop()
             else:
-                bot_map_obj[x, y].set_east(east)
-                dir_tuple = north, south, west, east
+                bot_map_obj[x, y].set_east(east_maze)
+                dir_tuple = bot_map[x][y].get_walls()
                 x_y_coor = x, y
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
                 bot_map_obj.set_distance_nums(x, y)
@@ -618,8 +651,19 @@ def run_flood_algo(bot, maze):
         # update distance for possible next iteration
         distance = bot.bot_map[x, y].get_distance()
 
-        # bot.stop()
-    bot_map_obj[x, y].is_dest = True
+        if distance == 0:
+            bot_map_obj[x, y].is_dest = True
+
+    print("******************************************")
+    for i in range(DEFAULT_SIZE):
+        for j in range(DEFAULT_SIZE):
+            num = bot_map_obj[i, j].get_distance()
+            print(num, end=' ')
+        print()
+
+    print(f"Location: {(x, y)}")
+    print(f"Walls: {bot_map_obj[x, y].get_walls()}")
+    print(f"Distance: {distance}")
 
 
 def run_depth_search_algo():
@@ -646,7 +690,9 @@ if __name__ == "__main__":
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()
-    print(maze_1)
+    # for i in range(DEFAULT_SIZE):
+    #     for j in range(DEFAULT_SIZE):
+    #         print(maze_1.map[i][j].__str__((i,j)))
 
     # Make a bot instance to represent the bot itself
     bot_1 = Bot()
@@ -654,7 +700,5 @@ if __name__ == "__main__":
     # Make the bot's map by populating with the distance numbers
     bot_map_obj = bot_1.bot_map
     bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
-    print(bot_1)
 
     run_flood_algo(bot_1, maze_1)
-    print(bot_1)
