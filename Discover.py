@@ -572,7 +572,11 @@ def run_flood_algo(bot, maze):
         for i in range(DEFAULT_SIZE):
             for j in range(DEFAULT_SIZE):
                 num = bot_map_obj[i, j].get_distance()
-                print(num, end=' ')
+                str_num = str(num)
+                if len(str_num) == 1:
+                    print(f" {str_num}", end='     ')
+                else:
+                    print(num, end='     ')
             print()
 
         print(f"Location: {(x, y)}")
@@ -658,7 +662,11 @@ def run_flood_algo(bot, maze):
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
             num = bot_map_obj[i, j].get_distance()
-            print(num, end=' ')
+            str_num = str(num)
+            if len(str_num) == 1:
+                print(f" {str_num}", end='     ')
+            else:
+                print(num, end='     ')
         print()
 
     print(f"Location: {(x, y)}")
@@ -690,9 +698,6 @@ if __name__ == "__main__":
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()
-    # for i in range(DEFAULT_SIZE):
-    #     for j in range(DEFAULT_SIZE):
-    #         print(maze_1.map[i][j].__str__((i,j)))
 
     # Make a bot instance to represent the bot itself
     bot_1 = Bot()
