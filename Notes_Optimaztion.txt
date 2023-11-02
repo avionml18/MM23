@@ -1,0 +1,17 @@
+Found out unpacking tuples is faster than initializing variables and setting them
+
+There is no reason for the maze to have distance values since they will never be used
+	Solution: make another class of squares, one dedicated for maze and would inherit from
+				the parent Square() class which has already been made or the reverse.
+
+				the attribute distance should be inclusive for the bot's map and exclusive
+				for the maze's map
+
+Plenty of things to optimize to make faster:
+    Changing to C++/C (search engine: python to c++ converter online free):
+        https://www.codeconvert.ai/python-to-c++-converter
+        https://www.javainuse.com/py2cpp
+
+There's shorthand for if-else statements: output_1 if condition else output_2
+
+
