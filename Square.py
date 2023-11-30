@@ -2,7 +2,7 @@
 File:           Square.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/28/23
+Date (Update):  11/29/23
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Square for discover.py program.
@@ -77,6 +77,9 @@ class Square:
 
     def get_distance(self):
         return self.distance
+
+    def get_start(self):
+        return self.is_start
 
     def __str__(self):
         """

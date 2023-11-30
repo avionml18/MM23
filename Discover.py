@@ -2,28 +2,21 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/28/23
+Date (Update):  11/29/23
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This file will simulate the algorithms through terminal
 """
 from enum import Enum
 from Bot import *
-
-# Default size has to greater than 2
-# nxn -> Ex: DEFAULT_SIZE = 2 means 2x2 or only four squares (destination squares)
-# CAN'T BE AN ODD NUMBER -> Mazes never are
-
-# DEFAULT_SIZE = 4
-DEFAULT_SIZE = 6
-# DEFAULT_SIZE = 8
-# DEFAULT_SIZE = 16
-
-# Consistent location of starting location and anywhere random is used (Depth First Search Algo)
-random.seed("random")
+from Colors import *
 
 
 class Direction(Enum):
+    """
+    Probably a better way to indicate direction rather than using enumeration but
+    used in algorithms for logic in directions uses
+    """
     UP = 1
     DOWN = 2
     LEFT = 3
@@ -71,16 +64,16 @@ def run_flood_algo(bot, maze):
         # Analyze choices:
         if -1 < (x - 1) and not north:
             if bot_map_obj[x - 1, y].get_distance() < distance:
-                possible_dir.append(Direction.UP.value)
+                possible_dir.append(Direction.UP.name)
         if (x + 1) < DEFAULT_SIZE and not south:
             if bot_map_obj[x + 1, y].get_distance() < distance:
-                possible_dir.append(Direction.DOWN.value)
+                possible_dir.append(Direction.DOWN.name)
         if -1 < (y - 1) and not west:
             if bot_map_obj[x, y - 1].get_distance() < distance:
-                possible_dir.append(Direction.LEFT.value)
+                possible_dir.append(Direction.LEFT.name)
         if (y + 1) < DEFAULT_SIZE and not east:
             if bot_map_obj[x, y + 1].get_distance() < distance:
-                possible_dir.append(Direction.RIGHT.value)
+                possible_dir.append(Direction.RIGHT.name)
         """
         Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
             class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
@@ -93,19 +86,29 @@ def run_flood_algo(bot, maze):
         dir_to_go = random.choice(possible_dir)
 
         # Printing output to see bot's value and bot's map distance values
-        print("******************************************")
+        for star in string_stars:
+            print(star, end="")
+        print()
+
         for i in range(DEFAULT_SIZE):
             for j in range(DEFAULT_SIZE):
                 num = bot_map[i][j].get_distance()
                 str_num = str(num)
-                if len(str_num) == 1:
-                    print(f" {str_num}", end='     ')
+                # Color to match the location color to track easier
+                if (x, y) == (i, j):
+                    if len(str_num) == 1:
+                        print(fg.blue + f" {str_num}" + Colors.reset, end='     ')
+                    else:
+                        print(fg.blue + str(num) + Colors.reset, end='     ')
                 else:
-                    print(num, end='     ')
+                    if len(str_num) == 1:
+                        print(f" {str_num}", end='     ')
+                    else:
+                        print(num, end='     ')
             print()
 
         # Printing out x and y locations
-        print(f"Location: {(x, y)}")
+        print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
 
         # Printing out walls in a more readable format
         north, south, west, east = bot_map[x][y].get_walls()
@@ -118,45 +121,30 @@ def run_flood_algo(bot, maze):
             dir_list.append("West")
         if east:
             dir_list.append("East")
-        print(f"Walls: {dir_list}")
+
+        if not dir_list:
+            print("Walls: None")
+        else:
+            print(f"Walls: {dir_list}")
 
         # Printing out directions in a more readable format
-        possible_dir_list = []
-        for dir_num in possible_dir:
-            if dir_num == Direction.UP.value:
-                possible_dir_list.append(Direction.UP.name)
-            elif dir_num == Direction.DOWN.value:
-                possible_dir_list.append(Direction.DOWN.name)
-            elif dir_num == Direction.LEFT.value:
-                possible_dir_list.append(Direction.LEFT.name)
-            elif dir_num == Direction.RIGHT.value:
-                possible_dir_list.append(Direction.RIGHT.name)
-        print(f"Directions possible: {possible_dir_list}")
-
-        # if possible_dir_list == []:
-        #     print(f"Directions possible: {possible_dir_list}")
-        # else:
-        #     print("Directions possible: ")
+        if not possible_dir:
+            print("Directions possible: None")
+        else:
+            print(f"Directions possible: {possible_dir}")
 
         # Printing distance
-        print(f"Distance: {distance}")
+        print("Distance: " + fg.blue + f"{distance}" + Colors.reset)
 
         # Print the direction in more readable format
-        if dir_to_go == Direction.UP.value:
-            print(f"Direction to go: {Direction.UP.name}")
-        elif dir_to_go == Direction.DOWN.value:
-            print(f"Direction to go: {Direction.DOWN.name}")
-        elif dir_to_go == Direction.LEFT.value:
-            print(f"Direction to go: {Direction.LEFT.name}")
-        elif dir_to_go == Direction.RIGHT.value:
-            print(f"Direction to go: {Direction.RIGHT.name}")
+        print(f"Direction to go: {dir_to_go}")
 
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
 
         # Then tell the bot where to go in the actual maze
         # DIRECTION = UP
-        if dir_to_go == Direction.UP.value:
+        if dir_to_go == Direction.UP.name:
             # If you don't hit the north wall -> move to that location in the algorithm
             if not north_maze:
                 # Go bot
@@ -174,7 +162,7 @@ def run_flood_algo(bot, maze):
                 bot_map_obj.set_distance_nums(x, y)
 
         # DIRECTION = DOWN
-        elif dir_to_go == Direction.DOWN.value:
+        elif dir_to_go == Direction.DOWN.name:
             # If you don't hit the south wall -> move to that location in the algorithm
             if not south_maze:
                 x += 1
@@ -191,7 +179,7 @@ def run_flood_algo(bot, maze):
                 bot_map_obj.set_distance_nums(x, y)
 
         # DIRECTION = LEFT
-        elif dir_to_go == Direction.LEFT.value:
+        elif dir_to_go == Direction.LEFT.name:
             # If you don't hit the west wall -> move to that location in the algorithm
             if not west_maze:
                 y -= 1
@@ -208,7 +196,7 @@ def run_flood_algo(bot, maze):
                 bot_map_obj.set_distance_nums(x, y)
 
         # DIRECTION = RIGHT
-        elif dir_to_go == Direction.RIGHT.value:
+        elif dir_to_go == Direction.RIGHT.name:
             # If you don't hit the east wall -> move to that location in the algorithm
             if not east_maze:
                 y += 1
@@ -233,20 +221,49 @@ def run_flood_algo(bot, maze):
             bot_map[x][y].is_dest = True
 
     # Printing output to see bot's value and bot's map distance values
-    print("******************************************")
+    for star in string_stars:
+        print(star, end="")
+    print()
+
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
             num = bot_map[i][j].get_distance()
             str_num = str(num)
-            if len(str_num) == 1:
-                print(f" {str_num}", end='     ')
+            # Color to match the location color to track easier
+            if (x, y) == (i, j):
+                if len(str_num) == 1:
+                    print(fg.blue + f" {str_num}" + Colors.reset, end='     ')
+                else:
+                    print(fg.blue + str(num) + Colors.reset, end='     ')
             else:
-                print(num, end='     ')
+                if len(str_num) == 1:
+                    print(f" {str_num}", end='     ')
+                else:
+                    print(num, end='     ')
         print()
 
-    print(f"Location: {(x, y)}")
-    print(f"Walls: {bot_map[x][y].get_walls()}")
-    print(f"Distance: {distance}")
+    # Printing out x and y locations
+    print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
+
+    # Printing out walls in a more readable format
+    north, south, west, east = bot_map[x][y].get_walls()
+    dir_list = []
+    if north:
+        dir_list.append("North")
+    if south:
+        dir_list.append("South")
+    if west:
+        dir_list.append("West")
+    if east:
+        dir_list.append("East")
+
+    if not dir_list:
+        print("Walls: None")
+    else:
+        print(f"Walls: {dir_list}")
+
+    # Printing distance
+    print("Distance: " + fg.blue + f"{distance}" + Colors.reset)
 
 
 """Make sure to wait or sleep before the bot goes back to try to find the start"""
@@ -275,21 +292,21 @@ def run_depth_search_algo(bot, maze):
     """Enter Code for checking orientation + if it's not in the right orientation, then change it"""
     """Assume it's in position to go straight from the start #Orientation Matters!!!"""
 
-    while unexplore(bot_map) and not bot_map[x][y].is_start():
-        # Implement this using recursion for every intersection you reach
+    while unexplore(bot_map) and not bot_map[x][y].get_start():
+        """ Implement this using recursion for every _intersection_ you reach """
         possible_dir = []
 
         north, south, west, east = bot_map[x][y].get_walls()
 
         # Analyze choices:
         if -1 < (x - 1) and not north:
-            possible_dir.append(Direction.UP.value)
+            possible_dir.append(Direction.UP.name)
         if (x + 1) < DEFAULT_SIZE and not south:
-            possible_dir.append(Direction.DOWN.value)
+            possible_dir.append(Direction.DOWN.name)
         if -1 < (y - 1) and not west:
-            possible_dir.append(Direction.LEFT.value)
+            possible_dir.append(Direction.LEFT.name)
         if (y + 1) < DEFAULT_SIZE and not east:
-            possible_dir.append(Direction.RIGHT.value)
+            possible_dir.append(Direction.RIGHT.name)
 
         """
         Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
@@ -303,24 +320,57 @@ def run_depth_search_algo(bot, maze):
         dir_to_go = random.choice(possible_dir)
 
         # Printing output to see bot's value and bot's map distance values
-        print("******************************************")
+        for star in string_stars:
+            print(star, end="")
+        print()
+
         for i in range(DEFAULT_SIZE):
             for j in range(DEFAULT_SIZE):
-                explore = bot_map[i][j].is_explore()
-                # ^ = indicates where the bot is
+                explore = bot_map[i][j].get_explore()
+                # Color to match the location color to track easier
                 if (i, j) == (x, y):
-                    print("^", end='     ')
-                # E = explored square
-                elif explore:
-                    print("E", end='     ')
-                # U = unexplored square
+                    # E = explored square
+                    if explore:
+                        print(fg.blue + "E" + Colors.reset, end='     ')
+                    # U = unexplored square
+                    else:
+                        print(fg.blue + "U" + Colors.reset, end='     ')
                 else:
-                    print("U", end='     ')
+                    # E = explored square
+                    if explore:
+                        print("E", end='     ')
+                    # U = unexplored square
+                    else:
+                        print("U", end='     ')
             print()
 
-        print(f"Location: {(x, y)}")
-        print(f"Walls: {bot_map[x][y].get_walls()}")
-        print(f"Directions possible: {possible_dir}")
+        # Printing out x and y locations
+        print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
+
+        # Printing out walls in a more readable format
+        north, south, west, east = bot_map[x][y].get_walls()
+        dir_list = []
+        if north:
+            dir_list.append("North")
+        if south:
+            dir_list.append("South")
+        if west:
+            dir_list.append("West")
+        if east:
+            dir_list.append("East")
+
+        if not dir_list:
+            print("Walls: None")
+        else:
+            print(f"Walls: {dir_list}")
+
+        # Printing out directions in a more readable format
+        if not possible_dir:
+            print("Directions possible: None")
+        else:
+            print(f"Directions possible: {possible_dir}")
+
+        # Print the direction in more readable format
         print(f"Direction to go: {dir_to_go}")
 
         # Look in the actual maze for walls
@@ -328,8 +378,9 @@ def run_depth_search_algo(bot, maze):
 
         # Then tell the bot where to go in the actual maze
         # DIRECTION = UP
-        if dir_to_go == Direction.UP.value:
+        if dir_to_go == Direction.UP.name:
             # If you don't hit a north wall -> move to that location until you hit a wall
+            """Add another condition to check for intersections while traveling in one direction"""
             while not north_maze:
                 # Go bot
                 x -= 1
@@ -344,7 +395,7 @@ def run_depth_search_algo(bot, maze):
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
         # DIRECTION = DOWN
-        elif dir_to_go == Direction.DOWN.value:
+        elif dir_to_go == Direction.DOWN.name:
             # If you don't hit a south wall -> move to that location until you hit a wall
             while not south_maze:
                 x += 1
@@ -359,7 +410,7 @@ def run_depth_search_algo(bot, maze):
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
         # DIRECTION = LEFT
-        elif dir_to_go == Direction.LEFT.value:
+        elif dir_to_go == Direction.LEFT.name:
             # If you don't hit a west wall -> move to that location until you hit a wall
             while not west_maze:
                 y -= 1
@@ -374,7 +425,7 @@ def run_depth_search_algo(bot, maze):
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
         # DIRECTION = RIGHT
-        elif dir_to_go == Direction.RIGHT.value:
+        elif dir_to_go == Direction.RIGHT.name:
             # If you don't hit an east wall -> move to that location until you hit a wall
             while not east_maze:
                 y += 1
@@ -389,7 +440,10 @@ def run_depth_search_algo(bot, maze):
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
     # Printing output to see bot's value and bot's map distance values
-    print("******************************************")
+    for star in string_stars:
+        print(star, end="")
+    print()
+
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
             explore = bot_map[x][y].is_explore()
@@ -404,11 +458,26 @@ def run_depth_search_algo(bot, maze):
                 print("U", end='     ')
         print()
 
-    print(f"Location: {(x, y)}")
-    print(f"Walls: {bot_map[x][y].get_walls()}")
+    # Printing out x and y locations
+    print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
 
+    # Printing out walls in a more readable format
+    north, south, west, east = bot_map[x][y].get_walls()
+    dir_list = []
+    if north:
+        dir_list.append("North")
+    if south:
+        dir_list.append("South")
+    if west:
+        dir_list.append("West")
+    if east:
+        dir_list.append("East")
 
-"""Make sure to wait or sleep before the bot goes back to try to find the start"""
+    if not dir_list:
+        print("Walls: None")
+    else:
+        print(f"Walls: {dir_list}")
+
 
 """
 If you were to go through the entire maze and using the flood-fill algorithm, it is guaranteed that you wil
@@ -461,4 +530,4 @@ if __name__ == "__main__":
 
     # Run the flood fill algorithm to test it
     run_flood_algo(bot_1, maze_1)
-    run_depth_search_algo(bot_1, maze_1)
+    # run_depth_search_algo(bot_1, maze_1)

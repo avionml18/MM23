@@ -2,22 +2,13 @@
 File:           Bot.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/28/23
+Date (Update):  11/29/23
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Bot for discover.py program.
 """
 
 from Map import *
-
-# Default size has to greater than 2
-# nxn -> Ex: DEFAULT_SIZE = 2 means 2x2 or only four squares (destination squares)
-# CAN'T BE AN ODD NUMBER -> Mazes never are
-
-# DEFAULT_SIZE = 4
-DEFAULT_SIZE = 6
-# DEFAULT_SIZE = 8
-# DEFAULT_SIZE = 16
 
 
 class Bot:

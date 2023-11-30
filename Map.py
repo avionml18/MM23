@@ -2,7 +2,7 @@
 File:           Map.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/28/23
+Date (Update):  11/29/23
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Map for discover.py program.
@@ -16,14 +16,25 @@ from Square import *
 # CAN'T BE AN ODD NUMBER -> Mazes never are
 
 # DEFAULT_SIZE = 4
-DEFAULT_SIZE = 6
+# FILENAME = ""
+
+# DEFAULT_SIZE = 6
+# FILENAME = "maze1.txt"
+
 # DEFAULT_SIZE = 8
-# DEFAULT_SIZE = 16
+# FILENAME = ""
+
+DEFAULT_SIZE = 16
+FILENAME = "maze2.txt"
+
+string_stars = ['*' for i in range(DEFAULT_SIZE)] * 7
 
 MAKE_WALLS_USER = False
 
 # Consistent location of starting location and anywhere random is used (Depth First Search Algo)
 # random.seed("random")
+# Without an argv in seed(), it'll use the current system time
+random.seed()
 
 
 class Map:
@@ -110,13 +121,16 @@ class Map:
         """
         # Use distance numbers as a way to describe the number of walls you've changed per square
 
-        filename = "maze1.txt"
-        file1 = open(filename, "r")
+        file1 = open(FILENAME, "r")
 
         for line in file1.readlines():
             x, y, north_file, south_file, west_file, east_file = line.strip('\n').split()
-            x = int(x)
-            y = int(y)
+            if DEFAULT_SIZE == 16:
+                x = int(x) - 1
+                y = int(y) - 1
+            else:
+                x = int(x)
+                y = int(y)
             north_file = bool(int(north_file))
             south_file = bool(int(south_file))
             west_file = bool(int(west_file))
