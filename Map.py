@@ -52,7 +52,8 @@ class Map:
         Method for making a simulated maze for the bot to traverse in.
         :return: None
         """
-        self.make_starting_square()
+        is_maze = True
+        self.make_starting_square(is_maze)
         self.make_out_walls()
         if MAKE_WALLS_USER:
             self.make_walls_user()
@@ -61,7 +62,7 @@ class Map:
 
     def make_bot_map(self):
         """
-        Method for making a bot's  maze that is used for maze solving and route choosing
+        Method for making a bot's maze that is used for maze solving and route choosing
         :return: None
         """
         self.make_distance_nums()
@@ -99,19 +100,24 @@ class Map:
                     cpy_distance_rows = self.map[max_dist_index - i][j].get_distance()
                     square_obj.set_distance(cpy_distance_rows)
 
-    def make_starting_square(self):
-        # Choice are (1) Top Left, (2) Bottom Left, (3) Top Right, (4) Bottom Right
-        list_loc = [(0, 0), (0, DEFAULT_SIZE - 1), (DEFAULT_SIZE - 1, 0), (DEFAULT_SIZE - 1, DEFAULT_SIZE - 1)]
+    def make_starting_square(self, is_maze):
+        if is_maze:
+            # Choice are (1) Top Left, (2) Bottom Left, (3) Top Right, (4) Bottom Right
+            list_loc = [(0, 0), (0, DEFAULT_SIZE - 1), (DEFAULT_SIZE - 1, 0), (DEFAULT_SIZE - 1, DEFAULT_SIZE - 1)]
 
-        x, y = random.choice(list_loc)
-        # ****Should I make this a setter?
-        self.map[x][y].is_start = True
-        self.map[x][y].set_explore(True)
-        # ****Should I make this a setter?
-        self.map[x][y].bot_here = True
+            x, y = random.choice(list_loc)
+            self.map[x][y].set_start(True)
+            self.map[x][y].set_explore(True)
+            self.map[x][y].set_bot_here(True)
 
-        # Saving bot's starting location in x and y coordinates
-        self.bot_loc_x, self.bot_loc_y = x, y
+            # Saving bot's starting location in x and y coordinates
+            self.bot_loc_x, self.bot_loc_y = x, y
+
+        # Fill in proper amounts for starting bot in the bot's maze
+        else:
+            self.map[self.bot_loc_x][self.bot_loc_y].set_start(True)
+            self.map[self.bot_loc_x][self.bot_loc_y].set_explore(True)
+            self.map[self.bot_loc_x][self.bot_loc_y].set_bot_here(True)
 
     def make_walls_file(self):
         """

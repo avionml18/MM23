@@ -57,6 +57,9 @@ class Square:
     def set_distance(self, distance):
         self.distance = distance
 
+    def set_start(self, start):
+        self.is_start = start
+
     def get_north_wall(self):
         return self.w_north
 

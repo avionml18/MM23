@@ -326,20 +326,17 @@ def run_depth_search_algo(bot, maze):
 
         for i in range(DEFAULT_SIZE):
             for j in range(DEFAULT_SIZE):
-                explore = bot_map[i][j].get_explore()
-                # Color to match the location color to track easier
-                if (i, j) == (x, y):
-                    # E = explored square
-                    if explore:
+                explore = bot_map[i][j].is_explore()
+                # E = explored square
+                if explore:
+                    if (i, j) == (x, y):
                         print(fg.blue + "E" + Colors.reset, end='     ')
-                    # U = unexplored square
                     else:
-                        print(fg.blue + "U" + Colors.reset, end='     ')
-                else:
-                    # E = explored square
-                    if explore:
                         print("E", end='     ')
-                    # U = unexplored square
+                # U = unexplored square
+                else:
+                    if (i, j) == (x, y):
+                        print(fg.blue + "U" + Colors.reset, end='     ')
                     else:
                         print("U", end='     ')
             print()
@@ -446,16 +443,19 @@ def run_depth_search_algo(bot, maze):
 
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
-            explore = bot_map[x][y].is_explore()
-            # ^ = indicates where the bot is
-            if (i, j) == (x, y):
-                print("^", end='     ')
+            explore = bot_map[i][j].is_explore()
             # E = explored square
-            elif explore:
-                print("E", end='     ')
+            if explore:
+                if (i, j) == (x, y):
+                    print(fg.blue + "E" + Colors.reset, end='     ')
+                else:
+                    print("E", end='     ')
             # U = unexplored square
             else:
-                print("U", end='     ')
+                if (i, j) == (x, y):
+                    print(fg.blue + "U" + Colors.reset, end='     ')
+                else:
+                    print("U", end='     ')
         print()
 
     # Printing out x and y locations
@@ -526,8 +526,12 @@ if __name__ == "__main__":
     # Set the bot's starting square to the same starting square in the maze
     # Make the bot's map by populating with the distance numbers
     bot_map_obj = bot_1.bot_map
+
     bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
+    is_maze = False
+    bot_map_obj.make_starting_square(is_maze)
 
     # Run the flood fill algorithm to test it
     run_flood_algo(bot_1, maze_1)
+
     # run_depth_search_algo(bot_1, maze_1)
