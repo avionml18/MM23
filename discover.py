@@ -77,10 +77,8 @@ def run_flood_algo(bot, maze):
         """
         Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
             class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
-        """
-        """
-        In reality, we would have a gyro or something to indicate the bot's orientation thus, that
-          would be a factor in this decision        
+              - In reality, we would have a gyro or something to indicate the bot's orientation thus, that
+                would be a factor in this decision        
         """
 
         dir_to_go = random.choice(possible_dir)
@@ -311,10 +309,8 @@ def run_depth_search_algo(bot, maze):
         """
         Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
             class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
-        """
-        """
-        In reality, we would have a gyro or something to indicate the bot's orientation thus, that
-          would be a factor in this decision        
+              - In reality, we would have a gyro or something to indicate the bot's orientation thus, that
+                would be a factor in this decision        
         """
 
         dir_to_go = random.choice(possible_dir)

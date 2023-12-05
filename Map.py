@@ -32,9 +32,9 @@ string_stars = ['*' for i in range(DEFAULT_SIZE)] * 7
 MAKE_WALLS_USER = False
 
 # Consistent location of starting location and anywhere random is used (Depth First Search Algo)
-# random.seed("random")
+random.seed("random")
 # Without an argv in seed(), it'll use the current system time
-random.seed()
+# random.seed()
 
 
 class Map:
