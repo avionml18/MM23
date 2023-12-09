@@ -9,7 +9,7 @@ Description:    This file will simulate the algorithms through terminal
 """
 from enum import Enum
 import random
-from SpeedRun import *
+
 # Default size has to greater than 2
 # nxn -> Ex: DEFAULT_SIZE = 2 means 2x2 or only four squares (destination squares)
 # CAN'T BE AN ODD NUMBER -> Mazes never are
@@ -438,7 +438,7 @@ class Square:
         self.is_explore = False
         self.distance = 0
         """Is the mouse supposed to have the shortest route?"""
-        self.shortest_route = 256
+        self.shortest_route = 99
         self.bot_here = False
 
     def set_square(self, dir_tuple, explore, distance):
@@ -687,7 +687,6 @@ def run_flood_algo(bot, maze):
                 x -= 1
                 bot.move(x, y, maze)
 
-
             # If you hit the north wall -> update the north wall on the bot's map
             else:
                 bot_map_obj[x, y].set_north(north_maze)
@@ -752,6 +751,7 @@ def run_flood_algo(bot, maze):
         # Check if distances change and if they do, update maze
         # update distance for possible next iteration
         distance = bot.bot_map[x, y].get_distance()
+
         """Not sure if we need this but interface for Speedrun mode"""
         if distance == 0:
             bot_map_obj[x, y].is_dest = True
@@ -805,44 +805,13 @@ if __name__ == "__main__":
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()
+
     # Make a bot instance to represent the bot itself
     bot_1 = Bot()
     # Set the bot's starting square to the same starting square in the maze
     # Make the bot's map by populating with the distance numbers
     bot_map_obj = bot_1.bot_map
     bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
-    startx, starty = maze_1.get_bot_loc()
-
-    bot_map_obj[starty,startx].is_start = True
-    bot_map_obj[starty,startx].is_explore = 1
 
     # Run the flood fill algorithm to test it
     run_flood_algo(bot_1, maze_1)
-
-
-    speedrun(startx, starty, 0, bot_map_obj)#call from starting square with curr-path 0
-
-    for i in range(DEFAULT_SIZE):
-        # for j in range(4):
-        print(i, end=": ")
-        for j in range(DEFAULT_SIZE):
-            if (bot_map_obj[i,j].shortest_route) < 10:
-                print(f" {bot_map_obj[i,j].shortest_route}", end='   |  ')
-            elif (bot_map_obj[i,j].shortest_route) < 100:
-                print(f" {bot_map_obj[i,j].shortest_route}", end='  |  ')
-            else:
-                print(f" {bot_map_obj[i,j].shortest_route}", end=' |  ')
-        print()
-        print("    ----------------------------------------------")
-
-
-    directions = ['X']*bot_map_obj[2,2].shortest_route
-    instructions = ['X']*bot_map_obj[2,2].shortest_route
-
-    generate_directions(2, 2, bot_map_obj, directions)
-    generate_instructions(2, 2, bot_map_obj, directions, instructions)
-    
-    #prints shortest path of each square in the maze
-
-
-    print(instructions)

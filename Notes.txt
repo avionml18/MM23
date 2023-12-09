@@ -1,0 +1,37 @@
+maze1 Output:
+0 0 0 0 0 0
+0 1 1 1 1 1
+1 0 0 1 0 0
+0 1 1 1 0 1
+1 1 0 1 0 1
+0 0 0 0 0 0
+
+Input:
+1 1 1 1 1 1
+1 1 1 1 1 1
+1 2 0 1 0 0
+1 3 1 1 0 0
+1 4 1 0 0 1
+1 5 0 1 0 0
+2 0 1 1 0 1
+2 3 0 0 0 1
+3 1 0 1 0 1
+3 2 0 1 0 0
+3 3 0 1 0 1
+3 5 1 1 1 0
+4 0 0 1 0 0
+4 1 0 1 0 0
+4 3 0 1 1 1
+4 5 0 1 0 0
+
+seed = "random"
+Starting location at 5,5
+
+
+// Use graphs which has vertices and edges to make your maze-solving algorithm
+is_dest square weird
+
+Make different files for each class and one file to hold all algorithms
+The driver file should make the bot and map class -> this in Github would be our discover.py
+    discover.py -> would be the file driving/managing the map algorithms
+    discover.py in PYCHARM is NOT going to be discover.py in Github
