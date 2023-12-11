@@ -2,7 +2,7 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/29/23
+Date (Update):  12/11/23
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This file will simulate the algorithms through terminal
@@ -10,6 +10,7 @@ Description:    This file will simulate the algorithms through terminal
 from enum import Enum
 from Bot import *
 from Colors import *
+from SpeedRun import *
 
 
 class Direction(Enum):
@@ -82,7 +83,6 @@ def run_flood_algo(bot, maze):
         """
 
         dir_to_go = random.choice(possible_dir)
-
         # Printing output to see bot's value and bot's map distance values
         for star in string_stars:
             print(star, end="")
@@ -95,9 +95,9 @@ def run_flood_algo(bot, maze):
                 # Color to match the location color to track easier
                 if (x, y) == (i, j):
                     if len(str_num) == 1:
-                        print(fg.blue + f" {str_num}" + Colors.reset, end='     ')
+                        print(fg.red + f" {str_num}" + Colors.reset, end='     ')
                     else:
-                        print(fg.blue + str(num) + Colors.reset, end='     ')
+                        print(fg.red + str(num) + Colors.reset, end='     ')
                 else:
                     if len(str_num) == 1:
                         print(f" {str_num}", end='     ')
@@ -106,7 +106,9 @@ def run_flood_algo(bot, maze):
             print()
 
         # Printing out x and y locations
-        print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
+        print(Colors.bold, end='')
+        print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
+        print(Colors.bold, end='')
 
         # Printing out walls in a more readable format
         north, south, west, east = bot_map[x][y].get_walls()
@@ -132,7 +134,7 @@ def run_flood_algo(bot, maze):
             print(f"Directions possible: {possible_dir}")
 
         # Printing distance
-        print("Distance: " + fg.blue + f"{distance}" + Colors.reset)
+        print("Distance: " + fg.red + f"{distance}" + Colors.reset)
 
         # Print the direction in more readable format
         print(f"Direction to go: {dir_to_go}")
@@ -230,9 +232,9 @@ def run_flood_algo(bot, maze):
             # Color to match the location color to track easier
             if (x, y) == (i, j):
                 if len(str_num) == 1:
-                    print(fg.blue + f" {str_num}" + Colors.reset, end='     ')
+                    print(fg.red + f" {str_num}" + Colors.reset, end='     ')
                 else:
-                    print(fg.blue + str(num) + Colors.reset, end='     ')
+                    print(fg.red + str(num) + Colors.reset, end='     ')
             else:
                 if len(str_num) == 1:
                     print(f" {str_num}", end='     ')
@@ -241,7 +243,7 @@ def run_flood_algo(bot, maze):
         print()
 
     # Printing out x and y locations
-    print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
+    print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
 
     # Printing out walls in a more readable format
     north, south, west, east = bot_map[x][y].get_walls()
@@ -261,7 +263,7 @@ def run_flood_algo(bot, maze):
         print(f"Walls: {dir_list}")
 
     # Printing distance
-    print("Distance: " + fg.blue + f"{distance}" + Colors.reset)
+    print("Distance: " + fg.red + f"{distance}" + Colors.reset)
 
 
 """Make sure to wait or sleep before the bot goes back to try to find the start"""
@@ -326,19 +328,19 @@ def run_depth_search_algo(bot, maze):
                 # E = explored square
                 if explore:
                     if (i, j) == (x, y):
-                        print(fg.blue + "E" + Colors.reset, end='     ')
+                        print(fg.red + "E" + Colors.reset, end='     ')
                     else:
                         print("E", end='     ')
                 # U = unexplored square
                 else:
                     if (i, j) == (x, y):
-                        print(fg.blue + "U" + Colors.reset, end='     ')
+                        print(fg.red + "U" + Colors.reset, end='     ')
                     else:
                         print("U", end='     ')
             print()
 
         # Printing out x and y locations
-        print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
+        print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
 
         # Printing out walls in a more readable format
         north, south, west, east = bot_map[x][y].get_walls()
@@ -443,19 +445,19 @@ def run_depth_search_algo(bot, maze):
             # E = explored square
             if explore:
                 if (i, j) == (x, y):
-                    print(fg.blue + "E" + Colors.reset, end='     ')
+                    print(fg.red + "E" + Colors.reset, end='     ')
                 else:
                     print("E", end='     ')
             # U = unexplored square
             else:
                 if (i, j) == (x, y):
-                    print(fg.blue + "U" + Colors.reset, end='     ')
+                    print(fg.red + "U" + Colors.reset, end='     ')
                 else:
                     print("U", end='     ')
         print()
 
     # Printing out x and y locations
-    print("Location: " + fg.blue + f"{(x, y)}" + Colors.reset)
+    print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
 
     # Printing out walls in a more readable format
     north, south, west, east = bot_map[x][y].get_walls()
@@ -526,8 +528,36 @@ if __name__ == "__main__":
     bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
     is_maze = False
     bot_map_obj.make_starting_square(is_maze)
+    startx, starty = maze_1.get_bot_loc()
 
     # Run the flood fill algorithm to test it
     run_flood_algo(bot_1, maze_1)
 
     # run_depth_search_algo(bot_1, maze_1)
+
+
+    # SpeedRun
+    speedrun(startx, starty, 0, bot_map_obj)  # call from starting square with curr-path 0
+
+    for i in range(DEFAULT_SIZE):
+        # for j in range(4):
+        print(i, end=": ")
+        for j in range(DEFAULT_SIZE):
+            if (bot_map_obj[i, j].shortest_route) < 10:
+                print(f" {bot_map_obj[i, j].shortest_route}", end='   |  ')
+            elif (bot_map_obj[i, j].shortest_route) < 100:
+                print(f" {bot_map_obj[i, j].shortest_route}", end='  |  ')
+            else:
+                print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
+        print()
+        print("    ----------------------------------------------")
+
+    directions = ['X'] * bot_map_obj[2, 2].shortest_route
+    instructions = ['X'] * bot_map_obj[2, 2].shortest_route
+
+    generate_directions(2, 2, bot_map_obj, directions)
+    generate_instructions(2, 2, bot_map_obj, directions, instructions)
+
+    # prints shortest path of each square in the maze
+
+    print(instructions)
