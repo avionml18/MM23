@@ -34,6 +34,12 @@ MAKE_WALLS_USER = False
 # Consistent location of starting location and anywhere random is used (Depth First Search Algo)
 random.seed("random")
 # Without an argv in seed(), it'll use the current system time
+""" Speedrun becomes funky sometimes with random.seed() 
+Possibilties:   different starting locations
+                Some x or y coordinate declaration
+                Python dislikes Tim's and Avion's sanity
+                (Avion's doesn't know) Hopefully Tim does
+"""
 # random.seed()
 
 
