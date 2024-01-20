@@ -2,16 +2,15 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  12/11/23
+Date (Update):  1/20/24
 Date (Done):
-Email:          alowery1@umbc.edu or loweryavion@gmail.com
-Description:    This file will simulate the algorithms through terminal
+Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
+Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
 from enum import Enum
 from Bot import *
 from Colors import *
 from SpeedRun import *
-
 
 class Direction(Enum):
     """
@@ -613,6 +612,7 @@ def unexplore(map_obj):
 
 
 if __name__ == "__main__":
+    """ Things below this main will eventually be in the *driver.py" program. """
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()
