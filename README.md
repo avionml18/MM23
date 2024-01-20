@@ -28,3 +28,9 @@ Ideal Route/Speedrun: Dynamic Programming
 optimal substructure
 optimal route to end consists of optimal route to earlier squares
 n^2 runtime to solve maze
+
+
+driver.py:
+This file will be what the micromouse will actually be running. 
+This file will contain the imports of the functions in ReturnToStart.py, SpeedRun.py, and Discover.py.
+There will also be some functionality but mostly declerations and intializings vairables for ports, sensors, motors, and possibly batteries.
