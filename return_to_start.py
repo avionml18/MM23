@@ -2,7 +2,7 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  1/20/24
+Date (Update):  1/26/24
 Date (Done):
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
@@ -10,14 +10,26 @@ Description:    This file will simulate the bot traversing back from the center 
 """
 from Map import *
 from Colors import *
-from discover import Direction
+from enum import Enum
+
+
+class Direction(Enum):
+    """
+    Probably a better way to indicate directions rather than using enumeration but
+    used in algorithms for logic in directions uses
+    """
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
+
 
 def run_depth_search_algo(bot, maze):
     """
-    This is where the Depth First Search algorithm and the arithmetic behind it is housed Depth first search,
+    This is where the Depth First Search algorithm and the arithmetic behind it is housed Depth-first search,
     bot goes -> intersection -> random direction -- if deadened --> go back to intersection -> repeat
 
-    :param bot: the bot object
+    :param bot: The bot object
     :param maze: the maze object (of the actual maze)
     :return: None(for now)
     """
@@ -33,8 +45,9 @@ def run_depth_search_algo(bot, maze):
     # Add backtracking variable
     backtrack_dir = ""
     backtracking = False
-    ctr_intersection = 0
+    index_last_intersection = 0
     possible_dir = []
+    # Format for intersections list: (x,y coordinate of the intersection, backtrack_directions list)
     intersections = []
 
     """
@@ -50,61 +63,66 @@ def run_depth_search_algo(bot, maze):
         """ Possibility -> Implement this using recursion for every _intersection_ you reach 
             Base case is the while loop condition """
 
-        # Format for intersections list: (Square object of intersection, backtrack_directions list)
-        """Do I only use the walls when I'm not backtracking"""
         north, south, west, east = bot_map[x][y].get_walls()
+        # move - boolean flag - whenever the bot moves to another square, this turns true
+        move = False
 
         # Determine if you're at a deadend here
         if not backtracking:
-            ctr_deadend = 0
-            if north:
-                ctr_deadend += 1
-            if south:
-                ctr_deadend += 1
-            if west:
-                ctr_deadend += 1
-            if east:
-                ctr_deadend += 1
 
             # Toggling whether you're at a deadend or not
-            if ctr_deadend == 3:
+            if (north, south, west, east).count(True) == 3:
                 backtracking = True
 
         # If you aren't backtracking as a result of reaching a deadend, continue normally
         if backtracking:
-            dir_to_go = intersections[ctr_intersection][1].pop()
+            # Only extract the direction if it exists
+            if intersections[index_last_intersection][1]:
+                dir_to_go = intersections[index_last_intersection][1].pop()
+
+            # If the direction doesn't exist -> potential intersection was actually a deadend
+            #   thus pop off the last (empty) intersection tuple and then extract the one that exsist (before the empty)
+            else:
+                # Popped off the last intersection
+                intersections.pop()
+                index_last_intersection = len(intersections) - 1
+                dir_to_go = intersections[index_last_intersection][1].pop()
 
             # No more directions to go
-            if not intersections[ctr_intersection][1]:
+            if not intersections[index_last_intersection][1]:
                 backtracking = False
                 backtrack_dir = ""
 
                 # Block off the wall that led to the deadend by making an invisible wall
-                x, y = intersections[ctr_intersection][0]
+                x_block, y_block = intersections[index_last_intersection][0]
                 string = ""
                 if dir_to_go == Direction.UP.name:
-                    bot_map[x][y].set_south(True)
+                    bot_map[x_block][y_block].set_south(True)
                     string = "South"
                 elif dir_to_go == Direction.DOWN.name:
-                    bot_map[x][y].set_north(True)
+                    bot_map[x_block][y_block].set_north(True)
                     string = "North"
                 elif dir_to_go == Direction.RIGHT.name:
-                    bot_map[x][y].set_west(True)
+                    bot_map[x_block][y_block].set_west(True)
                     string = "West"
                 elif dir_to_go == Direction.LEFT.name:
-                    bot_map[x][y].set_east(True)
+                    bot_map[x_block][y_block].set_east(True)
                     string = "East"
+
+                dir_tuple = bot_map[x_block][y_block].get_walls()
+                x_y_coor = x_block, y_block
+                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
                 print("\n "
-                      "Added invisible wall at location " + fg.green + f"({x, y})" + Colors.reset +
+                      "Added invisible wall at location " + fg.green + f"({x_block, y_block})" + Colors.reset +
                       f" with wall at " + fg.green + f"{string}" + Colors.reset +
                       "\n")
 
                 # Popped off the last intersection
                 intersections.pop()
-                ctr_intersection = len(intersections) - 1
+                index_last_intersection = len(intersections) - 1
 
         else:
             possible_dir = []
@@ -119,26 +137,19 @@ def run_depth_search_algo(bot, maze):
             if (y + 1) < DEFAULT_SIZE and not east and Direction.RIGHT.name != backtrack_dir:
                 possible_dir.append(Direction.RIGHT.name)
 
-            """
-            Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
-                class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
-                  - In reality, we would have a gyro or something to indicate the bot's orientation thus, that
-                    would be a factor in this decision        
-            """
-
-            # Prioritize unexplored/filtered results (another constraints is to prevent destination repeats)
+            # Prioritize unexplored/filtered results (another constraint is to prevent destination repeats)
             unexplore_squares = []
             if Direction.UP.name in possible_dir and not bot_map[x - 1][y].get_explore():
-                if bot_map[x - 1][y].is_dest:
+                if bot_map[x - 1][y].distance:
                     unexplore_squares.append(Direction.UP.name)
             if Direction.DOWN.name in possible_dir and not bot_map[x + 1][y].get_explore():
-                if bot_map[x + 1][y].is_dest:
+                if bot_map[x + 1][y].distance:
                     unexplore_squares.append(Direction.DOWN.name)
             if Direction.LEFT.name in possible_dir and not bot_map[x][y - 1].get_explore():
-                if bot_map[x][y - 1].is_dest:
+                if bot_map[x][y - 1].distance:
                     unexplore_squares.append(Direction.LEFT.name)
             if Direction.RIGHT.name in possible_dir and not bot_map[x][y + 1].get_explore():
-                if bot_map[x][y + 1].is_dest:
+                if bot_map[x][y + 1].distance:
                     unexplore_squares.append(Direction.RIGHT.name)
 
             if unexplore_squares:
@@ -148,24 +159,11 @@ def run_depth_search_algo(bot, maze):
 
             # Intersection storage logic
 
-            # Analyze whether you are at an intersection
-            if len(possible_dir) > 1:
-                tuple_intersection = ((x, y), [])
-                intersections.append(tuple_intersection)
-                # If it's the first run, leave it as a zero for the first element
-                ctr_intersection = len(intersections) - 1
-
-            # Prevent direction of going backwards
-            if dir_to_go == Direction.UP.name:
-                backtrack_dir = Direction.DOWN.name
-            elif dir_to_go == Direction.DOWN.name:
-                backtrack_dir = Direction.UP.name
-            elif dir_to_go == Direction.RIGHT.name:
-                backtrack_dir = Direction.LEFT.name
-            elif dir_to_go == Direction.LEFT.name:
-                backtrack_dir = Direction.RIGHT.name
-
-            intersections[ctr_intersection][1].append(backtrack_dir)
+            # Analyze whether you are at an intersection and do not make a new entry if it's the most recent entry
+            if len(possible_dir) > 1 and (not intersections or (x, y) != intersections[index_last_intersection][0]):
+                list_intersection = [(x, y), []]
+                intersections.append(list_intersection)
+                index_last_intersection = len(intersections) - 1
 
         # Printing output to see bot's explored value
         for star in string_stars:
@@ -231,6 +229,7 @@ def run_depth_search_algo(bot, maze):
                 # Go bot
                 x -= 1
                 bot.move(x, y, maze)
+                move = True
 
             # If you hit the north wall -> update the north wall on the bot's map
             else:
@@ -245,6 +244,7 @@ def run_depth_search_algo(bot, maze):
             if not south_maze:
                 x += 1
                 bot.move(x, y, maze)
+                move = True
 
             # If you hit the south wall -> update the south wall on the bot's map
             else:
@@ -259,6 +259,7 @@ def run_depth_search_algo(bot, maze):
             if not west_maze:
                 y -= 1
                 bot.move(x, y, maze)
+                move = True
 
             # If you hit the west wall -> update the west wall on the bot's map
             else:
@@ -273,6 +274,7 @@ def run_depth_search_algo(bot, maze):
             if not east_maze:
                 y += 1
                 bot.move(x, y, maze)
+                move = True
 
             # If you hit the west wall -> update the west wall on the bot's map
             else:
@@ -280,6 +282,30 @@ def run_depth_search_algo(bot, maze):
                 dir_tuple = bot_map[x][y].get_walls()
                 x_y_coor = x, y
                 bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+        # Backtracking storage logic
+        if move and not backtracking:
+            # Prevent directions of going backwards
+            if dir_to_go == Direction.UP.name:
+                backtrack_dir = Direction.DOWN.name
+            elif dir_to_go == Direction.DOWN.name:
+                backtrack_dir = Direction.UP.name
+            elif dir_to_go == Direction.RIGHT.name:
+                backtrack_dir = Direction.LEFT.name
+            elif dir_to_go == Direction.LEFT.name:
+                backtrack_dir = Direction.RIGHT.name
+            intersections[index_last_intersection][1].append(backtrack_dir)
+
+            # 1. Recheck intersection list that recent "intersections" are actual intersection -> Notes.txt
+            ntrsc_ndx = 0
+            while ntrsc_ndx < len(intersections):
+                bot_x, bot_y = intersections[ntrsc_ndx][0]
+                if not bot_map[bot_x][bot_y].get_walls().count(True) < 2:
+                    pop_intersection = intersections.pop(ntrsc_ndx)
+                    intersections[ntrsc_ndx-1][1] = intersections[ntrsc_ndx-1][1] + pop_intersection[1]
+                    index_last_intersection = len(intersections) - 1
+                else:
+                    ntrsc_ndx += 1
 
     # Printing output to see bot's explored value
     for star in string_stars:
@@ -326,23 +352,23 @@ def run_depth_search_algo(bot, maze):
 
 def run_whole_maze_algo(bot, maze):
     """
-    This is where the Whole Maze algorithm and the arithmetic behind it is housed whole-maze is similar to depth
-    first search...We want to search as many possible paths and ideally get back to the start
+    This is where the Whole Maze algorithm and the arithmetic behind it is housed whole-maze is similar to
+    depth-first search...We want to search as many possible paths and ideally get back to the start
 
     Looks for intersection and keeps looking for unexplored mazes
 
-    :param bot: the bot object
-    :param maze: the maze object (of the actual maze)
+    :param bot: The bot object
+    :param maze: The maze object (of the actual maze)
     :return: None(for now)
     """
-    pass
+    print("\nRUN WHOLE MAZE ALGORITHM\n")
 
 
 def unexplore(map_obj):
     """
-    This will determine whether there's still unexplored squares within the maze.
+    This will determine whether there are still unexplored squares within the maze.
 
-    :param map_obj: bot's map object (Bot(Map())
+    :param map_obj: Bot's map object (Bot(Map())
     :return: true if there are still unexplored squares and false if there isn't (bool)
     """
     # You may be able to dynamically shorten the length and width of the maze you're looking at
