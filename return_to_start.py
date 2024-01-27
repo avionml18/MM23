@@ -42,9 +42,10 @@ def run_depth_search_algo(bot, maze):
     bot_map = bot_map_obj.map
     # Starting location of bot at a destination square
     x, y = bot_map_obj.get_bot_loc()
-    # Add backtracking variable
+    # Add backtracking variables
     backtrack_dir = ""
     backtracking = False
+    backtracked = False
     index_last_intersection = 0
     possible_dir = []
     # Format for intersections list: (x,y coordinate of the intersection, backtrack_directions list)
@@ -111,7 +112,7 @@ def run_depth_search_algo(bot, maze):
 
                 dir_tuple = bot_map[x_block][y_block].get_walls()
                 x_y_coor = x_block, y_block
-                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+                bot_map_obj.check_set_walls(dir_tuple, x_y_coor) #? Kinda useless since you should never be on that side of the wall
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
@@ -123,6 +124,8 @@ def run_depth_search_algo(bot, maze):
                 # Popped off the last intersection
                 intersections.pop()
                 index_last_intersection = len(intersections) - 1
+                # boolean variable for backtracking to control when to start looking at a backtracked direction
+                backtracked = True
 
         else:
             possible_dir = []
@@ -285,27 +288,32 @@ def run_depth_search_algo(bot, maze):
 
         # Backtracking storage logic
         if move and not backtracking:
-            # Prevent directions of going backwards
-            if dir_to_go == Direction.UP.name:
-                backtrack_dir = Direction.DOWN.name
-            elif dir_to_go == Direction.DOWN.name:
-                backtrack_dir = Direction.UP.name
-            elif dir_to_go == Direction.RIGHT.name:
-                backtrack_dir = Direction.LEFT.name
-            elif dir_to_go == Direction.LEFT.name:
-                backtrack_dir = Direction.RIGHT.name
-            intersections[index_last_intersection][1].append(backtrack_dir)
+            # This is needed to prevent adding a direction right after backtracking is over (in if a statement of
+            # backtracking = False)
+            if not backtracked:
+                # Prevent directions of going backwards
+                if dir_to_go == Direction.UP.name:
+                    backtrack_dir = Direction.DOWN.name
+                elif dir_to_go == Direction.DOWN.name:
+                    backtrack_dir = Direction.UP.name
+                elif dir_to_go == Direction.RIGHT.name:
+                    backtrack_dir = Direction.LEFT.name
+                elif dir_to_go == Direction.LEFT.name:
+                    backtrack_dir = Direction.RIGHT.name
+                intersections[index_last_intersection][1].append(backtrack_dir)
 
-            # 1. Recheck intersection list that recent "intersections" are actual intersection -> Notes.txt
-            ntrsc_ndx = 0
-            while ntrsc_ndx < len(intersections):
-                bot_x, bot_y = intersections[ntrsc_ndx][0]
-                if not bot_map[bot_x][bot_y].get_walls().count(True) < 2:
-                    pop_intersection = intersections.pop(ntrsc_ndx)
-                    intersections[ntrsc_ndx-1][1] = intersections[ntrsc_ndx-1][1] + pop_intersection[1]
-                    index_last_intersection = len(intersections) - 1
-                else:
-                    ntrsc_ndx += 1
+                # 1. Recheck intersection list that recent "intersections" are actual intersection -> Notes.txt
+                ntrsc_ndx = 0
+                while ntrsc_ndx < len(intersections):
+                    bot_x, bot_y = intersections[ntrsc_ndx][0]
+                    if not bot_map[bot_x][bot_y].get_walls().count(True) < 2:
+                        pop_intersection = intersections.pop(ntrsc_ndx)
+                        intersections[ntrsc_ndx-1][1] = intersections[ntrsc_ndx-1][1] + pop_intersection[1]
+                        index_last_intersection = len(intersections) - 1
+                    else:
+                        ntrsc_ndx += 1
+            else:
+                backtracked = False
 
     # Printing output to see bot's explored value
     for star in string_stars:

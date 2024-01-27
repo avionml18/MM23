@@ -29,3 +29,5 @@ Explanation of comments in a program
 
 List compresion can filter results thorugh a list and provide a new one for you
 
+opposite directions shouldn't happen in the intersection list
+
