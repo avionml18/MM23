@@ -282,7 +282,10 @@ if __name__ == "__main__":
     run_flood_algo(bot_1, maze_1)
 
     # Run the depth-first search fill algorithm
-    run_depth_search_algo(bot_1, maze_1)
+    # run_depth_search_algo(bot_1, maze_1)
+
+    # Run the whole maze algorithm
+    run_whole_maze_algo(bot_1, maze_1)
 
     # SpeedRun
     speedrun(startx, starty, 0, bot_map_obj)  # call from starting square with curr-path 0

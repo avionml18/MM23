@@ -82,7 +82,7 @@ def run_depth_search_algo(bot, maze):
                 dir_to_go = intersections[index_last_intersection][1].pop()
 
             # If the direction doesn't exist -> potential intersection was actually a deadend
-            #   thus pop off the last (empty) intersection tuple and then extract the one that exsist (before the empty)
+            #   thus pop off the last (empty) intersection tuple and then extract the one that exists (before the empty)
             else:
                 # Popped off the last intersection
                 intersections.pop()
@@ -112,7 +112,8 @@ def run_depth_search_algo(bot, maze):
 
                 dir_tuple = bot_map[x_block][y_block].get_walls()
                 x_y_coor = x_block, y_block
-                bot_map_obj.check_set_walls(dir_tuple, x_y_coor) #? Kinda useless since you should never be on that side of the wall
+                bot_map_obj.check_set_walls(dir_tuple,
+                                            x_y_coor)  # ? Kinda useless since you should never be on that side of the wall
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
@@ -308,7 +309,7 @@ def run_depth_search_algo(bot, maze):
                     bot_x, bot_y = intersections[ntrsc_ndx][0]
                     if not bot_map[bot_x][bot_y].get_walls().count(True) < 2:
                         pop_intersection = intersections.pop(ntrsc_ndx)
-                        intersections[ntrsc_ndx-1][1] = intersections[ntrsc_ndx-1][1] + pop_intersection[1]
+                        intersections[ntrsc_ndx - 1][1] = intersections[ntrsc_ndx - 1][1] + pop_intersection[1]
                         index_last_intersection = len(intersections) - 1
                     else:
                         ntrsc_ndx += 1
@@ -369,7 +370,289 @@ def run_whole_maze_algo(bot, maze):
     :param maze: The maze object (of the actual maze)
     :return: None(for now)
     """
+
+    # Other approaches are in Notes.txt
+    # 4th Approach (Difficulty?): Reverse Flood Search - looking for the next unexplored square
+    # 1. __Scan__ the maze for unexplored squares (coordinates [to save memory rather than the object itself])
+    # and __store__ to a (tuple) list. [(x,y), (x1,y1), ... ,(x_n,y_n)]
+    # 2. Randomly __choose__ a coordinate from the tuple list
+    #    a. My hope is the randomness will choose squares spread out, thus increasing the chance of hitting
+    #    more unexplored squares without targeting them.
+    # 3. __Flood__ Maze with new numbers targeted at the randomly chosen coordinates
+    # 4. Repeat steps 1-3 until all unexplored squares are found.
+
     print("\nRUN WHOLE MAZE ALGORITHM\n")
+
+    ###############################    Algorithm Set Up     ###############################
+
+    bot_map_obj = bot.bot_map
+    bot_map = bot_map_obj.map
+    # Starting location of the bot is the destination square it is at flood fill algo: (8, 7)
+    x, y = bot_map_obj.get_bot_loc()
+    """Assume it's in position to go straight from the start # Orientation Matters!!!"""
+    tuple_list = []
+
+    # Step 1: Scan and Store
+    ndx = 0
+    for i in range(DEFAULT_SIZE):
+        for j in range(DEFAULT_SIZE):
+            if not bot_map[i][j].get_explore():
+                tuple_list.append([(i, j), ndx])
+                ndx += 1
+
+    """
+    If the bot stops when it arrives in the destination square pointing away from the exit of the destination 
+    squares then rotate the bot 180 degrees.
+    """
+    """Enter Code for checking orientation + if it's not in the right orientation, then change it"""
+    """Assume it's in position to go straight from the start #Orientation Matters!!!"""
+
+    ###############################    Bot's Maze Logic     ###############################
+    """ Maybe use boolean flag instead of two "bot_map[x][y].get_start()" or a more "cody" was to do it """
+    while tuple_list and not bot_map[x][y].get_start():
+        # Step 2: Choose
+        coor, ndx_2_pop = random.choice(tuple_list)
+        tuple_list.pop(ndx_2_pop)
+
+        # Step 3: Flood
+        flood(bot_map, coor)
+        # Gather the distance number after you've flooded the maze with new distance numbers
+        distance = bot_map[x][y].get_distance()
+
+        """Can change to recursion: f(org_x, org_y, dir:int, dest_found/distance)"""
+        while distance != 0 and not bot_map[x][y].get_start():
+            possible_dir = []
+
+            north, south, west, east = bot_map[x][y].get_walls()
+
+            # Analyze choices:
+            if -1 < (x - 1) and not north:
+                if bot_map_obj[x - 1, y].get_distance() < distance:
+                    possible_dir.append(Direction.UP.name)
+            if (x + 1) < DEFAULT_SIZE and not south:
+                if bot_map_obj[x + 1, y].get_distance() < distance:
+                    possible_dir.append(Direction.DOWN.name)
+            if -1 < (y - 1) and not west:
+                if bot_map_obj[x, y - 1].get_distance() < distance:
+                    possible_dir.append(Direction.LEFT.name)
+            if (y + 1) < DEFAULT_SIZE and not east:
+                if bot_map_obj[x, y + 1].get_distance() < distance:
+                    possible_dir.append(Direction.RIGHT.name)
+            """
+            Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
+            class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
+                - In reality, we would have a gyro or something to indicate the bot's orientation thus, that
+                would be a factor in this decision        
+    
+                Solution: Handle orientation within the code for the hardware
+                Orientation takes time -> changing direction from what you're doing takes time -> thus, instead of
+                prioritizing straightness in the code (and recoding a bunch), simply prioritize not going in a different
+                direction than what you did before. 
+            """
+
+            dir_to_go = random.choice(possible_dir)
+            # Printing output to see bot's value and bot's map distance values
+            for star in string_stars:
+                print(star, end="")
+            print()
+
+            for i in range(DEFAULT_SIZE):
+                for j in range(DEFAULT_SIZE):
+                    num = bot_map[i][j].get_distance()
+                    str_num = str(num)
+                    # Color to match the location color to track easier
+                    if (x, y) == (i, j):
+                        if len(str_num) == 1:
+                            print(fg.red + f" {str_num}" + Colors.reset, end='     ')
+                        else:
+                            print(fg.red + str(num) + Colors.reset, end='     ')
+                    else:
+                        if len(str_num) == 1:
+                            print(f" {str_num}", end='     ')
+                        else:
+                            print(num, end='     ')
+                print()
+
+            for i in range(DEFAULT_SIZE):
+                for j in range(DEFAULT_SIZE):
+                    explore = bot_map[i][j].is_explore
+                    # E = explored square
+                    if explore:
+                        if (i, j) == (x, y):
+                            print(fg.red + "E" + Colors.reset, end='     ')
+                        else:
+                            print("E", end='     ')
+                    # U = unexplored square
+                    else:
+                        if (i, j) == (x, y):
+                            print(fg.red + "U" + Colors.reset, end='     ')
+                        else:
+                            print("U", end='     ')
+                print()
+
+            # Printing out x and y locations
+            print(Colors.bold, end='')
+            print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
+            print(Colors.bold, end='')
+
+            # Printing out walls in a more readable format
+            north, south, west, east = bot_map[x][y].get_walls()
+            dir_list = []
+            if north:
+                dir_list.append("North")
+            if south:
+                dir_list.append("South")
+            if west:
+                dir_list.append("West")
+            if east:
+                dir_list.append("East")
+
+            if not dir_list:
+                print("Walls: None")
+            else:
+                print(f"Walls: {dir_list}")
+
+            # Printing out directions in a more readable format
+            if not possible_dir:
+                print("Directions possible: None")
+            else:
+                print(f"Directions possible: {possible_dir}")
+
+            # Printing distance
+            print("Distance: " + fg.red + f"{distance}" + Colors.reset)
+
+            # Print the direction in more readable format
+            print(f"Direction to go: {dir_to_go}")
+
+            ###############################    Actual Maze Interaction     ###############################
+
+            # Look in the actual maze for walls
+            north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
+
+            # Then tell the bot where to go in the actual maze
+            # DIRECTION = UP
+            if dir_to_go == Direction.UP.name:
+                # If you don't hit the north wall -> move to that location in the algorithm
+                if not north_maze:
+                    # Go bot
+                    x -= 1
+                    bot.move(x, y, maze)
+
+                # If you hit the north wall -> update the north wall on the bot's map
+                else:
+                    bot_map[x][y].set_north(north_maze)
+                    dir_tuple = bot_map[x][y].get_walls()
+                    x_y_coor = x, y
+                    bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+                    # Update distance numbers for the bot and go again
+                    bot_map_obj.set_distance_nums(x, y)
+
+            # DIRECTION = DOWN
+            elif dir_to_go == Direction.DOWN.name:
+                # If you don't hit the south wall -> move to that location in the algorithm
+                if not south_maze:
+                    x += 1
+                    bot.move(x, y, maze)
+
+                # If you hit the south wall -> update the south wall on the bot's map
+                else:
+                    bot_map[x][y].set_south(south_maze)
+                    dir_tuple = bot_map[x][y].get_walls()
+                    x_y_coor = x, y
+                    bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+                    # Update distance numbers for the bot and go again
+                    bot_map_obj.set_distance_nums(x, y)
+
+            # DIRECTION = LEFT
+            elif dir_to_go == Direction.LEFT.name:
+                # If you don't hit the west wall -> move to that location in the algorithm
+                if not west_maze:
+                    y -= 1
+                    bot.move(x, y, maze)
+
+                # If you hit the west wall -> update the west wall on the bot's map
+                else:
+                    bot_map[x][y].set_west(west_maze)
+                    dir_tuple = bot_map[x][y].get_walls()
+                    x_y_coor = x, y
+                    bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+                    # Update distance numbers for the bot and go again
+                    bot_map_obj.set_distance_nums(x, y)
+
+            # DIRECTION = RIGHT
+            elif dir_to_go == Direction.RIGHT.name:
+                # If you don't hit the east wall -> move to that location in the algorithm
+                if not east_maze:
+                    y += 1
+                    bot.move(x, y, maze)
+
+                # If you hit the west wall -> update the west wall on the bot's map
+                else:
+                    bot_map[x][y].set_east(east_maze)
+                    dir_tuple = bot_map[x][y].get_walls()
+                    x_y_coor = x, y
+                    bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+                    # Update distance numbers for the bot and go again
+                    bot_map_obj.set_distance_nums(x, y)
+
+            distance = bot_map[x][y].get_distance()
+            """Not sure if we need this since you can't get out of the while loop without distance being equal to 0
+            Propose solution: put this if statement outside the while loop and get rid of the if condidtion."""
+            if distance == 0:
+                bot_map[x][y].is_dest = True
+                """When you find the destination square, you can populate the other walls
+                and declare the other destination squares as explored."""
+
+            # Printing output to see bot's value and bot's map distance values
+        for star in string_stars:
+            print(star, end="")
+        print()
+
+        for i in range(DEFAULT_SIZE):
+            for j in range(DEFAULT_SIZE):
+                num = bot_map[i][j].get_distance()
+                str_num = str(num)
+                # Color to match the location color to track easier
+                if (x, y) == (i, j):
+                    if len(str_num) == 1:
+                        print(fg.red + f" {str_num}" + Colors.reset, end='     ')
+                    else:
+                        print(fg.red + str(num) + Colors.reset, end='     ')
+                else:
+                    if len(str_num) == 1:
+                        print(f" {str_num}", end='     ')
+                    else:
+                        print(num, end='     ')
+            print()
+
+        # Printing out x and y locations
+        print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
+
+        # Printing out walls in a more readable format
+        north, south, west, east = bot_map[x][y].get_walls()
+        dir_list = []
+        if north:
+            dir_list.append("North")
+        if south:
+            dir_list.append("South")
+        if west:
+            dir_list.append("West")
+        if east:
+            dir_list.append("East")
+
+        if not dir_list:
+            print("Walls: None")
+        else:
+            print(f"Walls: {dir_list}")
+
+        # Printing distance
+        print("Distance: " + fg.red + f"{distance}" + Colors.reset)
+
+    """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
 
 def unexplore(map_obj):
@@ -386,3 +669,21 @@ def unexplore(map_obj):
             if not map_obj[i][j].get_explore():
                 return True
     return False
+
+
+def flood(map_obj, coor):
+    """
+    This will re-flood or replace the distance numbers with the proper ones for the change
+    in destination square.
+
+    :param map_obj: Bot's map object (Bot(Map())
+    :param coor: x,y coordinate that is your destination now
+    :return: None
+    """
+    dest_x, dest_y = coor
+
+    # Iterate around the destination square until all squares are flooded with new values
+    for row in range(DEFAULT_SIZE):
+        for col in range(DEFAULT_SIZE):
+            distance = abs(row - dest_x) + abs(col - dest_y)
+            map_obj[row][col].set_distance(distance)

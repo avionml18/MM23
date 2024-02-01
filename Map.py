@@ -2,7 +2,7 @@
 File:           Map.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/29/23
+Date (Update):  1/31/24
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Map for discover.py program.
@@ -371,12 +371,12 @@ class Map:
         if not east:
             dist_list.append(bot_map[bot_x][bot_y + 1].get_distance())
 
-        # min function to determine minimum distance, even if there's repeats
+        # min function to determine minimum distance, even if there are repeats
         new_dist = min(dist_list) + 1
 
         # change is a variable to indicate if where the program is at, has a change square if so,
         #   then you need to check available neighboring squares;
-        #   if not, return to previous square.
+        #   if not, return to the previous square.
         change = True
         if curr_dist != new_dist:
             curr_sq.set_distance(new_dist)
