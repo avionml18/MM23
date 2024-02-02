@@ -338,6 +338,7 @@ class Map:
     def set_distance_nums(self, bot_x, bot_y):
         """
         Recursion function for Flood-Fill Algorithm. This is for when the bot hits a wall
+        (or during return-to-start mode, someone has no possible directions)
         and has to update its current square, and most likely, the square it could go to.
         :param bot_x: x or row location of the bot (int)
         :param bot_y: y or col location of the bot (int)

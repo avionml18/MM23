@@ -2,11 +2,10 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  1/26/24
-Date (Done):
+Date (Update):  2/2/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
-                start of the maze or seeing all the maze through terminal
+                start of the maze or seeing all the maze through the terminal
 """
 from Map import *
 from Colors import *
@@ -408,7 +407,7 @@ def run_whole_maze_algo(bot, maze):
     """Assume it's in position to go straight from the start #Orientation Matters!!!"""
 
     ###############################    Bot's Maze Logic     ###############################
-    """ Maybe use boolean flag instead of two "bot_map[x][y].get_start()" or a more "cody" was to do it """
+    """ Maybe use boolean flag instead of two "bot_map[x][y].get_start()" or a more "code-y" was to do it """
     while tuple_list and not bot_map[x][y].get_start():
         # Step 2: Choose
         coor, ndx_2_pop = random.choice(tuple_list)
@@ -418,6 +417,8 @@ def run_whole_maze_algo(bot, maze):
         flood(bot_map, coor)
         # Gather the distance number after you've flooded the maze with new distance numbers
         distance = bot_map[x][y].get_distance()
+
+        dir_to_go = ""
 
         """Can change to recursion: f(org_x, org_y, dir:int, dest_found/distance)"""
         while distance != 0 and not bot_map[x][y].get_start():
@@ -449,8 +450,14 @@ def run_whole_maze_algo(bot, maze):
                 prioritizing straightness in the code (and recoding a bunch), simply prioritize not going in a different
                 direction than what you did before. 
             """
+            # Update distance numbers so that they correspond to where the bot can actually go
+            if not possible_dir:
+                bot_map_obj.set_distance_nums(x, y)
+                print("\n " + fg.green + "Had to update distance numbers due to not having any possible direction"
+                      + Colors.reset + "\n")
+            else:
+                dir_to_go = random.choice(possible_dir)
 
-            dir_to_go = random.choice(possible_dir)
             # Printing output to see bot's value and bot's map distance values
             for star in string_stars:
                 print(star, end="")
@@ -522,7 +529,10 @@ def run_whole_maze_algo(bot, maze):
             print("Distance: " + fg.red + f"{distance}" + Colors.reset)
 
             # Print the direction in more readable format
-            print(f"Direction to go: {dir_to_go}")
+            if dir_to_go:
+                print(f"Direction to go: {dir_to_go}")
+            else:
+                print("There was no possible direction to go")
 
             ###############################    Actual Maze Interaction     ###############################
 
