@@ -2,7 +2,7 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  2/2/24
+Date (Update):  2/4/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
                 start of the maze or seeing all the maze through the terminal
@@ -116,6 +116,7 @@ def run_depth_search_algo(bot, maze):
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
+                print(Colors.bold, end='')
                 print("\n "
                       "Added invisible wall at location " + fg.green + f"({x_block, y_block})" + Colors.reset +
                       f" with wall at " + fg.green + f"{string}" + Colors.reset +
@@ -168,27 +169,7 @@ def run_depth_search_algo(bot, maze):
                 intersections.append(list_intersection)
                 index_last_intersection = len(intersections) - 1
 
-        # Printing output to see bot's explored value
-        for star in string_stars:
-            print(star, end="")
-        print()
-
-        for i in range(DEFAULT_SIZE):
-            for j in range(DEFAULT_SIZE):
-                explore = bot_map[i][j].is_explore
-                # E = explored square
-                if explore:
-                    if (i, j) == (x, y):
-                        print(fg.red + "E" + Colors.reset, end='     ')
-                    else:
-                        print("E", end='     ')
-                # U = unexplored square
-                else:
-                    if (i, j) == (x, y):
-                        print(fg.red + "U" + Colors.reset, end='     ')
-                    else:
-                        print("U", end='     ')
-            print()
+        print_explore_outputs(bot_map, x, y)
 
         # Printing out x and y locations
         print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
@@ -205,6 +186,7 @@ def run_depth_search_algo(bot, maze):
         if east:
             dir_list.append("East")
 
+        print(Colors.bold, end='')
         if not dir_list:
             print("Walls: None")
         else:
@@ -315,27 +297,7 @@ def run_depth_search_algo(bot, maze):
             else:
                 backtracked = False
 
-    # Printing output to see bot's explored value
-    for star in string_stars:
-        print(star, end="")
-    print()
-
-    for i in range(DEFAULT_SIZE):
-        for j in range(DEFAULT_SIZE):
-            explore = bot_map[i][j].is_explore
-            # E = explored square
-            if explore:
-                if (i, j) == (x, y):
-                    print(fg.red + "E" + Colors.reset, end='     ')
-                else:
-                    print("E", end='     ')
-            # U = unexplored square
-            else:
-                if (i, j) == (x, y):
-                    print(fg.red + "U" + Colors.reset, end='     ')
-                else:
-                    print("U", end='     ')
-        print()
+    print_explore_outputs(bot_map, x, y)
 
     # Printing out x and y locations
     print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
@@ -352,6 +314,7 @@ def run_depth_search_algo(bot, maze):
     if east:
         dir_list.append("East")
 
+    print(Colors.bold, end='')
     if not dir_list:
         print("Walls: None")
     else:
@@ -395,7 +358,7 @@ def run_whole_maze_algo(bot, maze):
     ndx = 0
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
-            if not bot_map[i][j].get_explore():
+            if not bot_map[i][j].get_explore() and not bot_map[i][j].get_walls().count(True) == 4:
                 tuple_list.append([(i, j), ndx])
                 ndx += 1
 
@@ -453,54 +416,18 @@ def run_whole_maze_algo(bot, maze):
             # Update distance numbers so that they correspond to where the bot can actually go
             if not possible_dir:
                 bot_map_obj.set_distance_nums(x, y)
+                print(Colors.bold, end='')
                 print("\n " + fg.green + "Had to update distance numbers due to not having any possible direction"
                       + Colors.reset + "\n")
             else:
                 dir_to_go = random.choice(possible_dir)
 
-            # Printing output to see bot's value and bot's map distance values
-            for star in string_stars:
-                print(star, end="")
-            print()
-
-            for i in range(DEFAULT_SIZE):
-                for j in range(DEFAULT_SIZE):
-                    num = bot_map[i][j].get_distance()
-                    str_num = str(num)
-                    # Color to match the location color to track easier
-                    if (x, y) == (i, j):
-                        if len(str_num) == 1:
-                            print(fg.red + f" {str_num}" + Colors.reset, end='     ')
-                        else:
-                            print(fg.red + str(num) + Colors.reset, end='     ')
-                    else:
-                        if len(str_num) == 1:
-                            print(f" {str_num}", end='     ')
-                        else:
-                            print(num, end='     ')
-                print()
-
-            for i in range(DEFAULT_SIZE):
-                for j in range(DEFAULT_SIZE):
-                    explore = bot_map[i][j].is_explore
-                    # E = explored square
-                    if explore:
-                        if (i, j) == (x, y):
-                            print(fg.red + "E" + Colors.reset, end='     ')
-                        else:
-                            print("E", end='     ')
-                    # U = unexplored square
-                    else:
-                        if (i, j) == (x, y):
-                            print(fg.red + "U" + Colors.reset, end='     ')
-                        else:
-                            print("U", end='     ')
-                print()
+            print_distance_outputs(bot_map, x, y)
+            # print_explore_outputs(bot_map, x, y)
 
             # Printing out x and y locations
             print(Colors.bold, end='')
             print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-            print(Colors.bold, end='')
 
             # Printing out walls in a more readable format
             north, south, west, east = bot_map[x][y].get_walls()
@@ -514,6 +441,7 @@ def run_whole_maze_algo(bot, maze):
             if east:
                 dir_list.append("East")
 
+            print(Colors.bold, end='')
             if not dir_list:
                 print("Walls: None")
             else:
@@ -529,6 +457,7 @@ def run_whole_maze_algo(bot, maze):
             print("Distance: " + fg.red + f"{distance}" + Colors.reset)
 
             # Print the direction in more readable format
+            print(Colors.bold, end='')
             if dir_to_go:
                 print(f"Direction to go: {dir_to_go}")
             else:
@@ -617,29 +546,10 @@ def run_whole_maze_algo(bot, maze):
                 """When you find the destination square, you can populate the other walls
                 and declare the other destination squares as explored."""
 
-            # Printing output to see bot's value and bot's map distance values
-        for star in string_stars:
-            print(star, end="")
-        print()
-
-        for i in range(DEFAULT_SIZE):
-            for j in range(DEFAULT_SIZE):
-                num = bot_map[i][j].get_distance()
-                str_num = str(num)
-                # Color to match the location color to track easier
-                if (x, y) == (i, j):
-                    if len(str_num) == 1:
-                        print(fg.red + f" {str_num}" + Colors.reset, end='     ')
-                    else:
-                        print(fg.red + str(num) + Colors.reset, end='     ')
-                else:
-                    if len(str_num) == 1:
-                        print(f" {str_num}", end='     ')
-                    else:
-                        print(num, end='     ')
-            print()
+        print_distance_outputs(bot_map, x, y)
 
         # Printing out x and y locations
+        print(Colors.bold, end='')
         print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
 
         # Printing out walls in a more readable format
@@ -654,6 +564,7 @@ def run_whole_maze_algo(bot, maze):
         if east:
             dir_list.append("East")
 
+        print(Colors.bold, end='')
         if not dir_list:
             print("Walls: None")
         else:
@@ -661,6 +572,7 @@ def run_whole_maze_algo(bot, maze):
 
         # Printing distance
         print("Distance: " + fg.red + f"{distance}" + Colors.reset)
+        print(Colors.bold, end='')
 
     """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
@@ -697,3 +609,55 @@ def flood(map_obj, coor):
         for col in range(DEFAULT_SIZE):
             distance = abs(row - dest_x) + abs(col - dest_y)
             map_obj[row][col].set_distance(distance)
+
+
+def print_distance_outputs(map_obj, _x, _y):
+    # Printing output to see bot's value and bot's map distance values
+    print(Colors.bold, end='')
+    for star in string_stars:
+        print(star, end="")
+    print()
+
+    for i in range(DEFAULT_SIZE):
+        for j in range(DEFAULT_SIZE):
+            num = map_obj[i][j].get_distance()
+            str_num = str(num)
+            # Color to match the location color to track easier
+            if (_x, _y) == (i, j):
+                print(Colors.bold, end='')
+                if len(str_num) == 1:
+                    print(fg.red + f" {str_num}" + Colors.reset, end='     ')
+                else:
+                    print(fg.red + str(num) + Colors.reset, end='     ')
+                print(Colors.bold, end='')
+            else:
+                print(Colors.bold, end='')
+                if len(str_num) == 1:
+                    print(f" {str_num}", end='     ')
+                else:
+                    print(num, end='     ')
+                print(Colors.bold, end='')
+        print()
+
+
+def print_explore_outputs(map_obj, _x, _y):
+    for i in range(DEFAULT_SIZE):
+        for j in range(DEFAULT_SIZE):
+            explore = map_obj[i][j].is_explore
+            # E = explored square
+            if explore:
+                print(Colors.bold, end='')
+                if (i, j) == (_x, _y):
+                    print(fg.red + "E" + Colors.reset, end='     ')
+                else:
+                    print("E", end='     ')
+                print(Colors.bold, end='')
+            # U = unexplored square
+            else:
+                print(Colors.bold, end='')
+                if (i, j) == (_x, _y):
+                    print(fg.red + "U" + Colors.reset, end='     ')
+                else:
+                    print("U", end='     ')
+                print(Colors.bold, end='')
+        print()

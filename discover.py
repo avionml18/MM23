@@ -2,8 +2,7 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  1/26/24
-Date (Done):
+Date (Update):  2/24/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
@@ -77,31 +76,11 @@ def run_flood_algo(bot, maze):
 
         dir_to_go = random.choice(possible_dir)
         # Printing output to see bot's value and bot's map distance values
-        for star in string_stars:
-            print(star, end="")
-        print()
-
-        for i in range(DEFAULT_SIZE):
-            for j in range(DEFAULT_SIZE):
-                num = bot_map[i][j].get_distance()
-                str_num = str(num)
-                # Color to match the location color to track easier
-                if (x, y) == (i, j):
-                    if len(str_num) == 1:
-                        print(fg.red + f" {str_num}" + Colors.reset, end='     ')
-                    else:
-                        print(fg.red + str(num) + Colors.reset, end='     ')
-                else:
-                    if len(str_num) == 1:
-                        print(f" {str_num}", end='     ')
-                    else:
-                        print(num, end='     ')
-            print()
+        print_distance_outputs(bot_map, x, y)
 
         # Printing out x and y locations
         print(Colors.bold, end='')
         print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-        print(Colors.bold, end='')
 
         # Printing out walls in a more readable format
         north, south, west, east = bot_map[x][y].get_walls()
@@ -115,6 +94,7 @@ def run_flood_algo(bot, maze):
         if east:
             dir_list.append("East")
 
+        print(Colors.bold, end='')
         if not dir_list:
             print("Walls: None")
         else:
@@ -130,6 +110,7 @@ def run_flood_algo(bot, maze):
         print("Distance: " + fg.red + f"{distance}" + Colors.reset)
 
         # Print the direction in more readable format
+        print(Colors.bold, end='')
         print(f"Direction to go: {dir_to_go}")
 
         # Look in the actual maze for walls
@@ -213,27 +194,7 @@ def run_flood_algo(bot, maze):
             """When you find the destination square, you can populate the other walls
             and declare the other destination squares as explored."""
 
-    # Printing output to see bot's value and bot's map distance values
-    for star in string_stars:
-        print(star, end="")
-    print()
-
-    for i in range(DEFAULT_SIZE):
-        for j in range(DEFAULT_SIZE):
-            num = bot_map[i][j].get_distance()
-            str_num = str(num)
-            # Color to match the location color to track easier
-            if (x, y) == (i, j):
-                if len(str_num) == 1:
-                    print(fg.red + f" {str_num}" + Colors.reset, end='     ')
-                else:
-                    print(fg.red + str(num) + Colors.reset, end='     ')
-            else:
-                if len(str_num) == 1:
-                    print(f" {str_num}", end='     ')
-                else:
-                    print(num, end='     ')
-        print()
+    print_distance_outputs(bot_map, x, y)
 
     # Printing out x and y locations
     print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
@@ -250,6 +211,7 @@ def run_flood_algo(bot, maze):
     if east:
         dir_list.append("East")
 
+    print(Colors.bold, end='')
     if not dir_list:
         print("Walls: None")
     else:
@@ -281,12 +243,13 @@ if __name__ == "__main__":
     # Run the flood fill algorithm
     run_flood_algo(bot_1, maze_1)
 
-    # Run the depth-first search fill algorithm
-    # run_depth_search_algo(bot_1, maze_1)
-
     # Run the whole maze algorithm
     run_whole_maze_algo(bot_1, maze_1)
 
+    # Run the depth-first search fill algorithm
+    # run_depth_search_algo(bot_1, maze_1)
+
+    """
     # SpeedRun
     speedrun(startx, starty, 0, bot_map_obj)  # call from starting square with curr-path 0
 
@@ -312,3 +275,4 @@ if __name__ == "__main__":
     # prints shortest path of each square in the maze
 
     print(instructions)
+    """
