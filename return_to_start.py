@@ -2,14 +2,22 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  2/4/24
+Date (Update):  2/5/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
                 start of the maze or seeing all the maze through the terminal
 """
+import os.path
 from Map import *
 from Colors import *
 from enum import Enum
+
+# Constants
+END = "end"
+NOT_END = ""
+NEWLINE = "\n"
+# FILENAME_OUTPUT = "Flood_Whole.txt"
+FILENAME_OUTPUT = "Flood_DPS.txt"
 
 
 class Direction(Enum):
@@ -32,8 +40,9 @@ def run_depth_search_algo(bot, maze):
     :param maze: the maze object (of the actual maze)
     :return: None(for now)
     """
-
-    print("\nRUN DEPTH SEARCH ALGORITHM\n")
+    string_depth_title = "\nRUN DEPTH SEARCH ALGORITHM\n"
+    print(string_depth_title)
+    write_to_file(string_depth_title + NEWLINE)
 
     ###############################    Algorithm Set Up     ###############################
 
@@ -49,6 +58,7 @@ def run_depth_search_algo(bot, maze):
     possible_dir = []
     # Format for intersections list: (x,y coordinate of the intersection, backtrack_directions list)
     intersections = []
+    dir_to_go = ""
 
     """
     If the bot stops when it arrives in the destination square pointing away from the exit of the destination 
@@ -116,11 +126,13 @@ def run_depth_search_algo(bot, maze):
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
-                print(Colors.bold, end='')
-                print("\n "
-                      "Added invisible wall at location " + fg.green + f"({x_block, y_block})" + Colors.reset +
+                print(NEWLINE +
+                      " Added invisible wall at location " + fg.green + f"({x_block, y_block})" + Colors.reset +
                       f" with wall at " + fg.green + f"{string}" + Colors.reset +
-                      "\n")
+                      NEWLINE + Colors.bold)
+                write_to_file(NEWLINE +
+                              f" Added invisible wall at location ({x_block, y_block}) with wall at {string}" +
+                              NEWLINE)
 
                 # Popped off the last intersection
                 intersections.pop()
@@ -170,36 +182,10 @@ def run_depth_search_algo(bot, maze):
                 index_last_intersection = len(intersections) - 1
 
         print_explore_outputs(bot_map, x, y)
+        write_explore_outputs(bot_map, x, y)
 
-        # Printing out x and y locations
-        print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-
-        # Printing out walls in a more readable format
-        north, south, west, east = bot_map[x][y].get_walls()
-        dir_list = []
-        if north:
-            dir_list.append("North")
-        if south:
-            dir_list.append("South")
-        if west:
-            dir_list.append("West")
-        if east:
-            dir_list.append("East")
-
-        print(Colors.bold, end='')
-        if not dir_list:
-            print("Walls: None")
-        else:
-            print(f"Walls: {dir_list}")
-
-        # Printing out directions in a more readable format
-        if not possible_dir:
-            print("Directions possible: None")
-        else:
-            print(f"Directions possible: {possible_dir}")
-
-        # Print the direction in more readable format
-        print(f"Direction to go: {dir_to_go}")
+        print_info(bot_map, x, y, possible_dir, 0, dir_to_go, NOT_END)
+        write_info(bot_map, x, y, possible_dir, 0, dir_to_go, NOT_END)
 
         ###############################    Actual Maze Interaction     ###############################
 
@@ -298,27 +284,10 @@ def run_depth_search_algo(bot, maze):
                 backtracked = False
 
     print_explore_outputs(bot_map, x, y)
+    write_explore_outputs(bot_map, x, y)
 
-    # Printing out x and y locations
-    print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-
-    # Printing out walls in a more readable format
-    north, south, west, east = bot_map[x][y].get_walls()
-    dir_list = []
-    if north:
-        dir_list.append("North")
-    if south:
-        dir_list.append("South")
-    if west:
-        dir_list.append("West")
-    if east:
-        dir_list.append("East")
-
-    print(Colors.bold, end='')
-    if not dir_list:
-        print("Walls: None")
-    else:
-        print(f"Walls: {dir_list}")
+    print_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
+    write_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
 
 
 def run_whole_maze_algo(bot, maze):
@@ -343,7 +312,9 @@ def run_whole_maze_algo(bot, maze):
     # 3. __Flood__ Maze with new numbers targeted at the randomly chosen coordinates
     # 4. Repeat steps 1-3 until all unexplored squares are found.
 
-    print("\nRUN WHOLE MAZE ALGORITHM\n")
+    string_whole_title = "\nRUN WHOLE MAZE ALGORITHM\n"
+    print(string_whole_title)
+    write_to_file(string_whole_title + NEWLINE)
 
     ###############################    Algorithm Set Up     ###############################
 
@@ -416,52 +387,20 @@ def run_whole_maze_algo(bot, maze):
             # Update distance numbers so that they correspond to where the bot can actually go
             if not possible_dir:
                 bot_map_obj.set_distance_nums(x, y)
-                print(Colors.bold, end='')
-                print("\n " + fg.green + "Had to update distance numbers due to not having any possible direction"
-                      + Colors.reset + "\n")
+                print(Colors.bold + NEWLINE + fg.green + "Had to update distance numbers due to not having any "
+                                                         "possible direction" + Colors.reset + NEWLINE)
+                write_to_file(NEWLINE + "Had to update distance numbers due to not having any "
+                                        "possible direction" + NEWLINE + NEWLINE)
             else:
                 dir_to_go = random.choice(possible_dir)
 
             print_distance_outputs(bot_map, x, y)
-            # print_explore_outputs(bot_map, x, y)
+            write_distance_outputs(bot_map, x, y)
+            print_explore_outputs(bot_map, x, y)
+            write_explore_outputs(bot_map, x, y)
 
-            # Printing out x and y locations
-            print(Colors.bold, end='')
-            print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-
-            # Printing out walls in a more readable format
-            north, south, west, east = bot_map[x][y].get_walls()
-            dir_list = []
-            if north:
-                dir_list.append("North")
-            if south:
-                dir_list.append("South")
-            if west:
-                dir_list.append("West")
-            if east:
-                dir_list.append("East")
-
-            print(Colors.bold, end='')
-            if not dir_list:
-                print("Walls: None")
-            else:
-                print(f"Walls: {dir_list}")
-
-            # Printing out directions in a more readable format
-            if not possible_dir:
-                print("Directions possible: None")
-            else:
-                print(f"Directions possible: {possible_dir}")
-
-            # Printing distance
-            print("Distance: " + fg.red + f"{distance}" + Colors.reset)
-
-            # Print the direction in more readable format
-            print(Colors.bold, end='')
-            if dir_to_go:
-                print(f"Direction to go: {dir_to_go}")
-            else:
-                print("There was no possible direction to go")
+            print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
+            write_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
 
             ###############################    Actual Maze Interaction     ###############################
 
@@ -547,32 +486,12 @@ def run_whole_maze_algo(bot, maze):
                 and declare the other destination squares as explored."""
 
         print_distance_outputs(bot_map, x, y)
+        write_distance_outputs(bot_map, x, y)
+        print_explore_outputs(bot_map, x, y)
+        write_explore_outputs(bot_map, x, y)
 
-        # Printing out x and y locations
-        print(Colors.bold, end='')
-        print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-
-        # Printing out walls in a more readable format
-        north, south, west, east = bot_map[x][y].get_walls()
-        dir_list = []
-        if north:
-            dir_list.append("North")
-        if south:
-            dir_list.append("South")
-        if west:
-            dir_list.append("West")
-        if east:
-            dir_list.append("East")
-
-        print(Colors.bold, end='')
-        if not dir_list:
-            print("Walls: None")
-        else:
-            print(f"Walls: {dir_list}")
-
-        # Printing distance
-        print("Distance: " + fg.red + f"{distance}" + Colors.reset)
-        print(Colors.bold, end='')
+        print_info(bot_map, x, y, [], distance, dir_to_go, END)
+        write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
     """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
@@ -661,3 +580,138 @@ def print_explore_outputs(map_obj, _x, _y):
                     print("U", end='     ')
                 print(Colors.bold, end='')
         print()
+
+
+def print_info(map_obj, _x, _y, poss_dir, dist, dir_go, end_or_not):
+    # Printing out x and y locations
+    print(Colors.bold, end='')
+    print("Location: " + fg.red + f"{(_x, _y)}" + Colors.reset)
+
+    # Printing out walls in a more readable format
+    north, south, west, east = map_obj[_x][_y].get_walls()
+    dir_list = []
+    if north:
+        dir_list.append("North")
+    if south:
+        dir_list.append("South")
+    if west:
+        dir_list.append("West")
+    if east:
+        dir_list.append("East")
+
+    print(Colors.bold, end='')
+    if not dir_list:
+        print("Walls: None")
+    else:
+        print(f"Walls: {dir_list}")
+
+    if not end_or_not == END:
+
+        # Printing out possible directions in a more readable format
+        if not poss_dir:
+            print("Directions possible: None")
+        else:
+            print(f"Directions possible: {poss_dir}")
+
+        # Printing distance
+        print("Distance: " + fg.red + f"{dist}" + Colors.reset)
+
+        # Print the direction to go in more readable format
+        print(Colors.bold, end='')
+        if dir_go:
+            print(f"Direction to go: {dir_go}")
+        else:
+            print("There was no possible direction to go")
+
+
+def write_distance_outputs(_map, _x, _y):
+    # Printing output to see bot's value and bot's map distance values
+    for star in string_stars:
+        write_to_file(star)
+    write_to_file(NEWLINE)
+
+    for i in range(DEFAULT_SIZE):
+        for j in range(DEFAULT_SIZE):
+            num = _map[i][j].get_distance()
+            str_num = str(num)
+            # Color to match the location color to track easier
+            if (_x, _y) == (i, j):
+                if len(str_num) == 1:
+                    write_to_file(f" {str_num}" + '     ')
+                else:
+                    write_to_file(str(num) + '     ')
+            else:
+                if len(str_num) == 1:
+                    write_to_file(f" {str_num}" + '     ')
+                else:
+                    write_to_file(str_num + '     ')
+        write_to_file(NEWLINE)
+
+
+def write_explore_outputs(_map, _x, _y):
+    for i in range(DEFAULT_SIZE):
+        for j in range(DEFAULT_SIZE):
+            explore = _map[i][j].is_explore
+            # E = explored square
+            if explore:
+                if (i, j) == (_x, _y):
+                    write_to_file("E" + '     ')
+                else:
+                    write_to_file("E" + '     ')
+            # U = unexplored square
+            else:
+                if (i, j) == (_x, _y):
+                    write_to_file("U" + '     ')
+                else:
+                    write_to_file("U" + '     ')
+        write_to_file(NEWLINE)
+
+
+def write_info(_map, _x, _y, poss_dir, dist, dir_go, end_or_not):
+    # Printing out x and y locations
+    write_to_file(f"Location: {(_x, _y)}" + NEWLINE)
+
+    # Printing out walls in a more readable format
+    north, south, west, east = _map[_x][_y].get_walls()
+    dir_list = []
+    if north:
+        dir_list.append("North")
+    if south:
+        dir_list.append("South")
+    if west:
+        dir_list.append("West")
+    if east:
+        dir_list.append("East")
+
+    if not dir_list:
+        write_to_file("Walls: None" + NEWLINE)
+    else:
+        write_to_file(f"Walls: {dir_list}" + NEWLINE)
+
+    if not end_or_not == END:
+
+        # Printing out possible directions in a more readable format
+        if not poss_dir:
+            write_to_file("Directions possible: None" + NEWLINE)
+        else:
+            write_to_file(f"Directions possible: {poss_dir}" + NEWLINE)
+
+        # Printing distance
+        write_to_file(f"Distance: {dist}" + NEWLINE)
+
+        # Print the direction to go in more readable format
+        if dir_go:
+            write_to_file(f"Direction to go: {dir_go}" + NEWLINE)
+        else:
+            write_to_file("There was no possible direction to go" + NEWLINE)
+
+
+def write_to_file(string_input):
+    # Recording data
+    # num = 0
+    # while os.path.exists(f"output{num}"):
+    #     num += 1
+    # file = open(f"output{num}", "w")
+    file = open(FILENAME_OUTPUT, "a")
+    file.write(string_input)
+    file.close()

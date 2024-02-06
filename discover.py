@@ -2,7 +2,7 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  2/24/24
+Date (Update):  2/5/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
@@ -35,7 +35,9 @@ def run_flood_algo(bot, maze):
     #   Decide which neighboring cell has the lowest distance value
     #   Move to the neighboring cell with the lowest distance value
 
-    print("\nFLOOD FILL ALGORITHM\n")
+    string_flood_title = "\nFLOOD FILL ALGORITHM\n"
+    print(string_flood_title)
+    write_to_file(string_flood_title + NEWLINE)
 
     bot_map_obj = bot.bot_map
     bot_map = bot_map_obj.map
@@ -43,6 +45,7 @@ def run_flood_algo(bot, maze):
     x, y = bot_map_obj.get_bot_loc()
     """Assume it's in position to go straight from the start # Orientation Matters!!!"""
     distance = bot_map[x][y].get_distance()
+    dir_to_go = ""
     """Can change to recursion: f(org_x, org_y, dir:int, dest_found/distance)"""
     while distance != 0:
         possible_dir = []
@@ -77,41 +80,10 @@ def run_flood_algo(bot, maze):
         dir_to_go = random.choice(possible_dir)
         # Printing output to see bot's value and bot's map distance values
         print_distance_outputs(bot_map, x, y)
+        write_distance_outputs(bot_map, x, y)
 
-        # Printing out x and y locations
-        print(Colors.bold, end='')
-        print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-
-        # Printing out walls in a more readable format
-        north, south, west, east = bot_map[x][y].get_walls()
-        dir_list = []
-        if north:
-            dir_list.append("North")
-        if south:
-            dir_list.append("South")
-        if west:
-            dir_list.append("West")
-        if east:
-            dir_list.append("East")
-
-        print(Colors.bold, end='')
-        if not dir_list:
-            print("Walls: None")
-        else:
-            print(f"Walls: {dir_list}")
-
-        # Printing out directions in a more readable format
-        if not possible_dir:
-            print("Directions possible: None")
-        else:
-            print(f"Directions possible: {possible_dir}")
-
-        # Printing distance
-        print("Distance: " + fg.red + f"{distance}" + Colors.reset)
-
-        # Print the direction in more readable format
-        print(Colors.bold, end='')
-        print(f"Direction to go: {dir_to_go}")
+        print_info(bot_map, x, y, [], distance, dir_to_go, END)
+        write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
@@ -195,36 +167,17 @@ def run_flood_algo(bot, maze):
             and declare the other destination squares as explored."""
 
     print_distance_outputs(bot_map, x, y)
+    write_distance_outputs(bot_map, x, y)
 
-    # Printing out x and y locations
-    print("Location: " + fg.red + f"{(x, y)}" + Colors.reset)
-
-    # Printing out walls in a more readable format
-    north, south, west, east = bot_map[x][y].get_walls()
-    dir_list = []
-    if north:
-        dir_list.append("North")
-    if south:
-        dir_list.append("South")
-    if west:
-        dir_list.append("West")
-    if east:
-        dir_list.append("East")
-
-    print(Colors.bold, end='')
-    if not dir_list:
-        print("Walls: None")
-    else:
-        print(f"Walls: {dir_list}")
-
-    # Printing distance
-    print("Distance: " + fg.red + f"{distance}" + Colors.reset)
+    print_info(bot_map, x, y, [], distance, dir_to_go, END)
+    write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
 
 """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
 if __name__ == "__main__":
     """ Things below this main will eventually be in the *driver.py" program. """
+
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()
@@ -244,10 +197,10 @@ if __name__ == "__main__":
     run_flood_algo(bot_1, maze_1)
 
     # Run the whole maze algorithm
-    run_whole_maze_algo(bot_1, maze_1)
+    # run_whole_maze_algo(bot_1, maze_1)
 
     # Run the depth-first search fill algorithm
-    # run_depth_search_algo(bot_1, maze_1)
+    run_depth_search_algo(bot_1, maze_1)
 
     """
     # SpeedRun
