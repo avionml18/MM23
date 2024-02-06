@@ -80,10 +80,10 @@ def run_flood_algo(bot, maze):
         dir_to_go = random.choice(possible_dir)
         # Printing output to see bot's value and bot's map distance values
         print_distance_outputs(bot_map, x, y)
-        write_distance_outputs(bot_map, x, y)
+        # write_distance_outputs(bot_map, x, y)
 
         print_info(bot_map, x, y, [], distance, dir_to_go, END)
-        write_info(bot_map, x, y, [], distance, dir_to_go, END)
+        # write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
@@ -197,10 +197,10 @@ if __name__ == "__main__":
     run_flood_algo(bot_1, maze_1)
 
     # Run the whole maze algorithm
-    # run_whole_maze_algo(bot_1, maze_1)
+    run_whole_maze_algo(bot_1, maze_1)
 
     # Run the depth-first search fill algorithm
-    run_depth_search_algo(bot_1, maze_1)
+    # run_depth_search_algo(bot_1, maze_1)
 
     """
     # SpeedRun
