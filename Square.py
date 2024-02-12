@@ -25,7 +25,7 @@ class Square:
         self.is_explore = False
         self.distance = 0
         """Is the mouse supposed to have the shortest route?"""
-        self.shortest_route = 99
+        self.shortest_route = 256
         self.bot_here = False
 
     def set_square(self, dir_tuple, explore, distance):

@@ -195,16 +195,17 @@ if __name__ == "__main__":
 
     # Run the flood fill algorithm
     run_flood_algo(bot_1, maze_1)
+    finishx, finishy = maze_1.get_bot_loc()
 
     # Run the whole maze algorithm
-    run_whole_maze_algo(bot_1, maze_1)
+    # run_whole_maze_algo(bot_1, maze_1)
 
     # Run the depth-first search fill algorithm
-    # run_depth_search_algo(bot_1, maze_1)
+    run_depth_search_algo(bot_1, maze_1)
 
-    """
+
     # SpeedRun
-    speedrun(startx, starty, 0, bot_map_obj)  # call from starting square with curr-path 0
+    speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
 
     for i in range(DEFAULT_SIZE):
         # for j in range(4):
@@ -217,15 +218,23 @@ if __name__ == "__main__":
             else:
                 print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
         print()
-        print("    ----------------------------------------------")
+        print("    ------------------------------------------------------------------------------------------")
 
-    directions = ['X'] * bot_map_obj[2, 2].shortest_route
-    instructions = ['X'] * bot_map_obj[2, 2].shortest_route
+    directions = ['X'] * bot_map_obj[finishx, finishy].shortest_route
 
-    generate_directions(2, 2, bot_map_obj, directions)
-    generate_instructions(2, 2, bot_map_obj, directions, instructions)
+    generate_directions(finishy, finishx, bot_map_obj, directions, len(directions)-1)
+    startIndex = 0
+    while directions[startIndex] == 'X':
+        startIndex += 1
+    directionsNew = ['X'] * (len(directions) - startIndex)
+    for i in range(len(directions)-startIndex):
+        directionsNew[i] = directions[startIndex+i]
+
+    instructions = ['X'] * len(directionsNew)
+    generate_instructions(finishy, finishx, bot_map_obj, directionsNew, instructions)
 
     # prints shortest path of each square in the maze
 
+    print(directionsNew)
     print(instructions)
-    """
+
