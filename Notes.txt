@@ -1,0 +1,46 @@
+Use graphs which has vertices and edges to make your maze-solving algorithm
+is_dest square weird
+
+1/25-28/24
+
+Things that can be improved:
+* Once you enter the destination square, you can populate the surrounding walls automatically for you since there's only,
+one entrance into the destination "big" square.
+
+* Maybe a way to guarantee getting out of the destination squares at the beginning of return-to-start mode
+    * tell it to go to the nearest explored square (the only one nearest is the one that got it into the destination square)
+    and then put an invisible wall to block off the entrance to the destination square
+
+* Having repeated intersections in the intersection list may be a problem or less efficient. It means you figured out a way,
+to get back to wherever you wanted to backtrack. That technically means the most recent intersection should be the only one
+in the intersection list. [(8,7), (8,8), (7,8), (7,7), (8,7)] -> you would want the last one (and it's the bot exploring,
+the destination squares).
+
+* List comparison can filter results through a list and provide a new one for you
+
+* opposite directions shouldn't happen in the intersection list (because it's a waste of a move
+
+* Start making the program without the output in terminal -> trying to get to what the bot will run in actual competition
+
+Explanation of comments in a program
+# 1. Recheck intersection list that recent "intersections" are actual intersection
+    When adding intersection, it is a potential intersection since it's most likely an iteration of checking one wall
+    to be an actual wall while the others haven't been checked. Thus, the coordinate added to the intersection
+    list is simply temporary until it's verified. However, checking every wall would be too long, especially for DPS
+    algorithm.
+        PROPOSED SOLUTION 1: Check after every iteration of the loop for any potential intersections to not be ones by
+        checking the number of walls a square has. (Always two ways to check if there's an intersection: number of
+        walls and number of directions)
+        PROPOSED SOLUTION 2: ?
+
+Whole Maze Algorithm:
+    1st Approach (Harder): Look down the paths themselves as if you are the robot
+    2nd Approach (Semi-Harder): Look down a path by x number of squares and look at around it and count
+    the number of unexplored squares in total
+    3rd Approach (Easier): Divide the maze into four quadrants, and the percentage that has the most
+    unexplored squares is the direction the bot will predominately floats to, until a change in
+    percentage happens or it explored all is possibly can.
+    4th Approach: Reverse Flood Fill which (CHOOSEN METHOD)
+
+
+
