@@ -2,7 +2,7 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  2/5/24
+Date (Update):  2/25/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
                 start of the maze or seeing all the maze through the terminal
@@ -16,9 +16,10 @@ from enum import Enum
 END = "end"
 NOT_END = ""
 NEWLINE = "\n"
-FILENAME_OUTPUT = "Flood_Whole_Explored.txt"
+# FILENAME_OUTPUT = "Flood_Whole_Explored.txt"
 # FILENAME_OUTPUT = "Flood_Whole.txt"
 # FILENAME_OUTPUT = "Flood_DPS.txt"
+FILENAME_OUTPUT = "Scratch.txt"
 
 
 class Direction(Enum):
@@ -120,10 +121,11 @@ def run_depth_search_algo(bot, maze):
                     bot_map[x_block][y_block].set_east(True)
                     string = "East"
 
-                dir_tuple = bot_map[x_block][y_block].get_walls()
-                x_y_coor = x_block, y_block
-                bot_map_obj.check_set_walls(dir_tuple,
-                                            x_y_coor)  # ? Kinda useless since you should never be on that side of the wall
+                # ? Kinda useless since you should never be on that side of the wall
+                # dir_tuple = bot_map[x_block][y_block].get_walls()
+                # x_y_coor = x_block, y_block
+                # bot_map_obj.check_set_walls(dir_tuple,
+                #                             x_y_coor)
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
@@ -309,7 +311,7 @@ def run_whole_maze_algo(bot, maze):
     # and __store__ to a (tuple) list. [(x,y), (x1,y1), ... ,(x_n,y_n)]
     # 2. Randomly __choose__ a coordinate from the tuple list
     #    a. My hope is the randomness will choose squares spread out, thus increasing the chance of hitting
-    #    more unexplored squares without targeting them.
+    #    more unexplored squares without focusing on them.
     # 3. __Flood__ Maze with new numbers targeted at the randomly chosen coordinates
     # 4. Repeat steps 1-3 until all unexplored squares are found.
 
@@ -395,7 +397,9 @@ def run_whole_maze_algo(bot, maze):
             else:
                 dir_to_go = random.choice(possible_dir)
 
+            print_distance_outputs(bot_map, x, y)
             print_explore_outputs(bot_map, x, y)
+            # write_distance_outputs(bot_map, x, y)
             # write_explore_outputs(bot_map, x, y)
 
             print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
@@ -484,7 +488,9 @@ def run_whole_maze_algo(bot, maze):
                 """When you find the destination square, you can populate the other walls
                 and declare the other destination squares as explored."""
 
+        print_distance_outputs(bot_map, x, y)
         print_explore_outputs(bot_map, x, y)
+        # write_distance_outputs(bot_map, x, y)
         # write_explore_outputs(bot_map, x, y)
 
         print_info(bot_map, x, y, [], distance, dir_to_go, END)
@@ -497,7 +503,7 @@ def unexplore(map_obj):
     """
     This will determine whether there are still unexplored squares within the maze.
 
-    :param map_obj: Bot's map object (Bot(Map())
+    :param map_obj: Bot's map object (Bot (Map())
     :return: true if there are still unexplored squares and false if there isn't (bool)
     """
     # You may be able to dynamically shorten the length and width of the maze you're looking at
@@ -557,6 +563,11 @@ def print_distance_outputs(map_obj, _x, _y):
 
 
 def print_explore_outputs(map_obj, _x, _y):
+    print(Colors.bold, end='')
+    for star in string_stars:
+        print(star, end="")
+    print()
+
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
             explore = map_obj[i][j].is_explore
@@ -646,6 +657,11 @@ def write_distance_outputs(_map, _x, _y):
 
 
 def write_explore_outputs(_map, _x, _y):
+    # Printing output to see bot's value and bot's map distance values
+    for star in string_stars:
+        write_to_file(star)
+    write_to_file(NEWLINE)
+
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
             explore = _map[i][j].is_explore
