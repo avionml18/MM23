@@ -6,6 +6,7 @@ Date (Update):  2/25/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
+import os.path
 from Bot import *
 from SpeedRun import *
 from return_to_start import *
@@ -36,13 +37,14 @@ def run_flood_algo(bot, maze):
     #   Move to the neighboring cell with the lowest distance value
 
     string_flood_title = "\nFLOOD FILL ALGORITHM\n"
-    print(string_flood_title)
+    # print(string_flood_title)
     write_to_file(string_flood_title + NEWLINE)
 
     bot_map_obj = bot.bot_map
     bot_map = bot_map_obj.map
     # Starting location of bot (5, 5) with seed = "random"
     x, y = bot_map_obj.get_bot_loc()
+    write_to_file(f"Starting location: ({x},{y})" + NEWLINE)
     """Assume it's in position to go straight from the start # Orientation Matters!!!"""
     distance = bot_map[x][y].get_distance()
     dir_to_go = ""
@@ -78,12 +80,13 @@ def run_flood_algo(bot, maze):
         """
 
         dir_to_go = random.choice(possible_dir)
+
         # Printing output to see bot's value and bot's map distance values
-        print_distance_outputs(bot_map, x, y)
+        # print_distance_outputs(bot_map, x, y)
         # write_distance_outputs(bot_map, x, y)
 
-        print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
-        # write_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
+        # print_info(bot_map, x, y, [], distance, dir_to_go, END)
+        # write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
@@ -166,10 +169,10 @@ def run_flood_algo(bot, maze):
             """When you find the destination square, you can populate the other walls
             and declare the other destination squares as explored."""
 
-    print_distance_outputs(bot_map, x, y)
+    # print_distance_outputs(bot_map, x, y)
     write_distance_outputs(bot_map, x, y)
 
-    print_info(bot_map, x, y, [], distance, dir_to_go, END)
+    # print_info(bot_map, x, y, [], distance, dir_to_go, END)
     write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
 
@@ -193,48 +196,63 @@ if __name__ == "__main__":
     bot_map_obj.make_starting_square(is_maze)
     startx, starty = maze_1.get_bot_loc()
 
+    # Delete MM23_log.txt if it exists
+    if os.path.exists("MM23_log.txt"):
+        os.remove("MM23_log.txt")
+
     # Run the flood fill algorithm
     run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
 
     # Run the whole maze algorithm
-    # run_whole_maze_algo(bot_1, maze_1)
+    run_whole_maze_algo(bot_1, maze_1)
 
     # Run the depth-first search fill algorithm
-    run_depth_search_algo(bot_1, maze_1)
-
+    # run_depth_search_algo(bot_1, maze_1)
 
     # SpeedRun
+
+    string_depth_title = "\nSPEED RUN ALGORITHM\n"
+    # print(string_depth_title)
+    write_to_file(string_depth_title + '\n')
+
     speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
 
     for i in range(DEFAULT_SIZE):
         # for j in range(4):
-        print(i, end=": ")
+        # print(i, end=": ")
+        write_to_file(str(i) + ": ")
         for j in range(DEFAULT_SIZE):
             if (bot_map_obj[i, j].shortest_route) < 10:
-                print(f" {bot_map_obj[i, j].shortest_route}", end='   |  ')
+                # print(f" {bot_map_obj[i, j].shortest_route}", end='   |  ')
+                write_to_file(f" {bot_map_obj[i, j].shortest_route}   |  ")
             elif (bot_map_obj[i, j].shortest_route) < 100:
-                print(f" {bot_map_obj[i, j].shortest_route}", end='  |  ')
+                # print(f" {bot_map_obj[i, j].shortest_route}", end='  |  ')
+                write_to_file(f" {bot_map_obj[i, j].shortest_route}  |  ")
             else:
-                print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
-        print()
-        print("    ------------------------------------------------------------------------------------------")
-
+                # print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
+                write_to_file(f" {bot_map_obj[i, j].shortest_route} |  ")
+        # print()
+        write_to_file(NEWLINE)
+        # print("    ------------------------------------------------------------------------------------------")
+        write_to_file(
+            "    ------------------------------------------------------------------------------------------" + NEWLINE)
     directions = ['X'] * bot_map_obj[finishx, finishy].shortest_route
 
-    generate_directions(finishy, finishx, bot_map_obj, directions, len(directions)-1)
+    generate_directions(finishy, finishx, bot_map_obj, directions, len(directions) - 1)
     startIndex = 0
     while directions[startIndex] == 'X':
         startIndex += 1
     directionsNew = ['X'] * (len(directions) - startIndex)
-    for i in range(len(directions)-startIndex):
-        directionsNew[i] = directions[startIndex+i]
+    for i in range(len(directions) - startIndex):
+        directionsNew[i] = directions[startIndex + i]
 
     instructions = ['X'] * len(directionsNew)
     generate_instructions(finishy, finishx, bot_map_obj, directionsNew, instructions)
 
     # prints shortest path of each square in the maze
 
-    print(directionsNew)
-    print(instructions)
-
+    # print(directionsNew)
+    write_to_file(str(directionsNew) + NEWLINE)
+    # print(instructions)
+    write_to_file(str(instructions) + NEWLINE)

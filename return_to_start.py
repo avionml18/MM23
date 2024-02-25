@@ -19,7 +19,7 @@ NEWLINE = "\n"
 # FILENAME_OUTPUT = "Flood_Whole_Explored.txt"
 # FILENAME_OUTPUT = "Flood_Whole.txt"
 # FILENAME_OUTPUT = "Flood_DPS.txt"
-FILENAME_OUTPUT = "Scratch.txt"
+FILENAME_OUTPUT = "MM23_log.txt"
 
 
 class Direction(Enum):
@@ -43,7 +43,7 @@ def run_depth_search_algo(bot, maze):
     :return: None(for now)
     """
     string_depth_title = "\nRUN DEPTH SEARCH ALGORITHM\n"
-    print(string_depth_title)
+    # print(string_depth_title)
     write_to_file(string_depth_title + NEWLINE)
 
     ###############################    Algorithm Set Up     ###############################
@@ -129,10 +129,10 @@ def run_depth_search_algo(bot, maze):
 
                 # Indicate to the user you've added an invisible wall (because you most likely went through it
                 # or at least it seems that way in the output)
-                print(NEWLINE +
-                      " Added invisible wall at location " + fg.green + f"({x_block, y_block})" + Colors.reset +
-                      f" with wall at " + fg.green + f"{string}" + Colors.reset +
-                      NEWLINE + Colors.bold)
+                # print(NEWLINE +
+                #       " Added invisible wall at location " + fg.green + f"({x_block, y_block})" + Colors.reset +
+                #       f" with wall at " + fg.green + f"{string}" + Colors.reset +
+                #       NEWLINE + Colors.bold)
                 # write_to_file(NEWLINE +
                 #               f" Added invisible wall at location ({x_block, y_block}) with wall at {string}" +
                 #               NEWLINE)
@@ -184,10 +184,10 @@ def run_depth_search_algo(bot, maze):
                 intersections.append(list_intersection)
                 index_last_intersection = len(intersections) - 1
 
-        print_explore_outputs(bot_map, x, y)
+        # print_explore_outputs(bot_map, x, y)
         # write_explore_outputs(bot_map, x, y)
 
-        print_info(bot_map, x, y, possible_dir, 0, dir_to_go, NOT_END)
+        # print_info(bot_map, x, y, possible_dir, 0, dir_to_go, NOT_END)
         # write_info(bot_map, x, y, possible_dir, 0, dir_to_go, NOT_END)
 
         ###############################    Actual Maze Interaction     ###############################
@@ -286,11 +286,11 @@ def run_depth_search_algo(bot, maze):
             else:
                 backtracked = False
 
-    print_explore_outputs(bot_map, x, y)
-    # write_explore_outputs(bot_map, x, y)
+    # print_explore_outputs(bot_map, x, y)
+    write_explore_outputs(bot_map, x, y)
 
-    print_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
-    # write_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
+    # print_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
+    write_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
 
 
 def run_whole_maze_algo(bot, maze):
@@ -316,8 +316,8 @@ def run_whole_maze_algo(bot, maze):
     # 4. Repeat steps 1-3 until all unexplored squares are found.
 
     string_whole_title = "\nRUN WHOLE MAZE ALGORITHM\n"
-    print(string_whole_title)
-    # write_to_file(string_whole_title + NEWLINE)
+    # print(string_whole_title)
+    write_to_file(string_whole_title + NEWLINE)
 
     ###############################    Algorithm Set Up     ###############################
 
@@ -390,19 +390,19 @@ def run_whole_maze_algo(bot, maze):
             # Update distance numbers so that they correspond to where the bot can actually go
             if not possible_dir:
                 bot_map_obj.set_distance_nums(x, y)
-                print(Colors.bold + NEWLINE + fg.green + "Had to update distance numbers due to not having any "
-                                                         "possible direction" + Colors.reset + NEWLINE)
+                # print(Colors.bold + NEWLINE + fg.green + "Had to update distance numbers due to not having any "
+                #                                          "possible direction" + Colors.reset + NEWLINE)
                 # write_to_file(NEWLINE + "Had to update distance numbers due to not having any "
                 #                         "possible direction" + NEWLINE + NEWLINE)
             else:
                 dir_to_go = random.choice(possible_dir)
 
-            print_distance_outputs(bot_map, x, y)
-            print_explore_outputs(bot_map, x, y)
+            # print_distance_outputs(bot_map, x, y)
+            # print_explore_outputs(bot_map, x, y)
             # write_distance_outputs(bot_map, x, y)
             # write_explore_outputs(bot_map, x, y)
 
-            print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
+            # print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
             # write_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
 
             ###############################    Actual Maze Interaction     ###############################
@@ -488,13 +488,13 @@ def run_whole_maze_algo(bot, maze):
                 """When you find the destination square, you can populate the other walls
                 and declare the other destination squares as explored."""
 
-        print_distance_outputs(bot_map, x, y)
-        print_explore_outputs(bot_map, x, y)
-        # write_distance_outputs(bot_map, x, y)
-        # write_explore_outputs(bot_map, x, y)
+    # print_distance_outputs(bot_map, x, y)
+    # print_explore_outputs(bot_map, x, y)
+    # write_distance_outputs(bot_map, x, y)
+    write_explore_outputs(bot_map, x, y)
 
-        print_info(bot_map, x, y, [], distance, dir_to_go, END)
-        # write_info(bot_map, x, y, [], distance, dir_to_go, END)
+    # print_info(bot_map, x, y, [], distance, dir_to_go, END)
+    write_info(bot_map, x, y, [], 0, "", END)
 
     """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
