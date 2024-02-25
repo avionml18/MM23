@@ -2,7 +2,7 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  2/5/24
+Date (Update):  2/25/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
@@ -82,8 +82,8 @@ def run_flood_algo(bot, maze):
         print_distance_outputs(bot_map, x, y)
         # write_distance_outputs(bot_map, x, y)
 
-        print_info(bot_map, x, y, [], distance, dir_to_go, END)
-        # write_info(bot_map, x, y, [], distance, dir_to_go, END)
+        print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
+        # write_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
 
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
