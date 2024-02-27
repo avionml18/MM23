@@ -20,6 +20,8 @@ NEWLINE = "\n"
 # FILENAME_OUTPUT = "Flood_Whole.txt"
 # FILENAME_OUTPUT = "Flood_DPS.txt"
 FILENAME_OUTPUT = "MM23_log.txt"
+# FILENAME_OUTPUT = "MM23_log_DPS.txt"
+# FILENAME_OUTPUT = "MM23_log_WM.txt"
 
 
 class Direction(Enum):
@@ -329,12 +331,11 @@ def run_whole_maze_algo(bot, maze):
     tuple_list = []
 
     # Step 1: Scan and Store
-    ndx = 0
     for i in range(DEFAULT_SIZE):
         for j in range(DEFAULT_SIZE):
             if not bot_map[i][j].get_explore() and not bot_map[i][j].get_walls().count(True) == 4:
-                tuple_list.append([(i, j), ndx])
-                ndx += 1
+                tuple_list.append((i, j))
+
 
     """
     If the bot stops when it arrives in the destination square pointing away from the exit of the destination 
@@ -347,8 +348,8 @@ def run_whole_maze_algo(bot, maze):
     """ Maybe use boolean flag instead of two "bot_map[x][y].get_start()" or a more "code-y" was to do it """
     while tuple_list and not bot_map[x][y].get_start():
         # Step 2: Choose
-        coor, ndx_2_pop = random.choice(tuple_list)
-        tuple_list.pop(ndx_2_pop)
+        coor = random.choice(tuple_list)
+        tuple_list.remove(coor)
 
         # Step 3: Flood
         flood(bot_map, coor)
