@@ -4,6 +4,10 @@
 # y-coord: y-coordinate of current square
 # currpath: shortest path to the current square
 # output: updated ShortestPath value of all explored squares
+#from motor1 import *
+
+#MUST BE COMPILED ON RPI, IMPORT WITHIN motor1.py WILL ERROR OUT
+
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
     straight_weight = 1
     turn_weight = 2
@@ -90,6 +94,8 @@ def generate_directions(xcoord, ycoord, maze, directions, index):
 # ouput: list of motor instructions
 def generate_instructions(xcoord, ycoord, maze, directions, instructions):
     # loops through the complete list of directions
+    duration = 1
+    unit_dur = duration
     for i in range(len(directions)):
         # generates list of motor instructions
         # straight = 0
@@ -101,6 +107,7 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
         else:
             if directions[i] == directions[i - 1]:
                 instructions[i] = 0
+                duration = duration+unit_dur
             elif directions[i] == 'north' and directions[i - 1] == 'west':
                 instructions[i] = 2
             elif directions[i] == 'north' and directions[i - 1] == 'east':
@@ -117,3 +124,17 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
                 instructions[i] = 2
             elif directions[i] == 'west' and directions[i - 1] == 'north':
                 instructions[i] = 1
+
+        if instructions[i] == 1:
+            if instructions[i - 1] == 0:
+                print("Move forward for duration " + str(duration))
+                #motor_forward(duration)
+                duration = unit_dur
+            print("Turn Left")
+
+        if instructions[i] == 2:
+            if instructions[i - 1] == 0:
+                print("Move forward for duration " + str(duration))
+                #motor_forward(duration)
+                duration = unit_dur
+            print("Turn Right")
