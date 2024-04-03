@@ -2,13 +2,14 @@
 File:           Bot.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/29/23
-Date (Done):
+Date (Update):  4/2/24
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Bot for discover.py program.
 """
 
 from Map import *
+
+#MUST BE COMPILED ON RPI, IMPORT WITHIN motor1.py WILL ERROR OUT
 
 
 class Bot:
@@ -22,6 +23,7 @@ class Bot:
         self.left = False
         self.right = False
         self.go = False
+        self.UNIT_DUR = 5
 
         """ bot_map is where the bot is finding a route. It does not know of walls until it hits one """
         self.bot_map: Map = Map()
@@ -35,8 +37,6 @@ class Bot:
         :param maze: maze object that represents the maze in the real world (Map())
         :return: None
         """
-        # This is for telling the motors to start going for a certain amount.
-        # self.go = True
 
         # Gather original location data and update the next square location
         bot_org_x, bot_org_y = self.bot_map.get_bot_loc()
@@ -47,17 +47,24 @@ class Bot:
         self.bot_map[bot_new_x, bot_new_y].set_explore(True)
         self.bot_map.set_bot_loc(x_y_coor)
 
-        # Repeat what you did in the algorithm for moving in the actual maze
+        # Repeat what you did in the algorithm for moving in the actual maze 
+        """ Simulated """
+        maze.map[bot_org_x][bot_org_y].set_bot_here(False)
+        maze.map[bot_new_x][bot_new_y].set_bot_here(True)
+        maze.map[bot_new_x][bot_new_y].set_explore(True)  # Technically isn't necessary
+        maze.set_bot_loc(x_y_coor)
+
+        """ Reality """
         """
         I assume somewhere where here is where we tell the bot to move in a forward direction
 
         There will be somewhere BEFORE this where we tell the bot to turn or orientate itself to the proper 
             direction
         """
-        maze.map[bot_org_x][bot_org_y].set_bot_here(False)
-        maze.map[bot_new_x][bot_new_y].set_bot_here(True)
-        maze.map[bot_new_x][bot_new_y].set_explore(True)  # Technically isn't necessary
-        maze.set_bot_loc(x_y_coor)
+        # This is for telling the motors to start going for a certain amount.
+        print("Move forward for duration " + str(duration))
+        duration = self.UNIT_DUR 
+        #motor_forward(duration)
 
     """
     Don't think stop will be needed since in move, we will tell what the motors

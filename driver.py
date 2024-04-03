@@ -1,3 +1,11 @@
+"""
+File:           discover.py
+Authors:        Tim Weir, Avion Lowery
+Date (Start):   4/1/24
+Date (Update):  4/4/24
+Email:          <Tim's Email>, alowery1@umbc.edu or avion.m.lowery@gmail.com
+Description:    This file will be what the bot will use to run our programs. 
+"""
 from discover import *
 if __name__ == "__main__":
     """ Things below this main will eventually be in the *driver.py" program. """
