@@ -97,6 +97,7 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
     # loops through the complete list of directions
     duration = 1
     unit_dur = duration
+    motors('h')
     for i in range(len(directions)):
         # generates list of motor instructions
         # straight = 0
@@ -127,7 +128,6 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
                 instructions[i] = 1
 
 
-        motors('h')
         
         if instructions[i] == 1:
             if instructions[i - 1] == 0:
@@ -146,3 +146,5 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
                 duration = unit_dur
             print("Turn Right")
             motors('R', 1)
+    
+    motors('s')
