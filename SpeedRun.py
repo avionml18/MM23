@@ -4,8 +4,9 @@
 # y-coord: y-coordinate of current square
 # currpath: shortest path to the current square
 # output: updated ShortestPath value of all explored squares
-#from motor1 import *
-
+from motor1.1 import *
+from time import sleep
+from discover import *
 #MUST BE COMPILED ON RPI, IMPORT WITHIN motor1.py WILL ERROR OUT
 
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
@@ -125,16 +126,23 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
             elif directions[i] == 'west' and directions[i - 1] == 'north':
                 instructions[i] = 1
 
+
+        motors('h')
+        
         if instructions[i] == 1:
             if instructions[i - 1] == 0:
                 print("Move forward for duration " + str(duration))
-                #motor_forward(duration)
+                motors('f')
+                time.sleep(duration)
                 duration = unit_dur
             print("Turn Left")
+            motors('L', 1)
 
         if instructions[i] == 2:
             if instructions[i - 1] == 0:
                 print("Move forward for duration " + str(duration))
-                #motor_forward(duration)
+                motors('f')
+                time.sleep(duration)
                 duration = unit_dur
             print("Turn Right")
+            motors('R', 1)
