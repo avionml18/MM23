@@ -18,12 +18,19 @@ enable_discover = 25
 enable_rts = 26
 
 # GPIO setup(s)
+print("")
 # GPIO.setmode(GPIO.BCM)
+print("")
 # GPIO.setup(forwardPin, GPIO.OUT)
+print("")
 # GPIO.setup(backwardPin, GPIO.OUT)
+print("")
 # GPIO.setup(enable_speed_run, GPIO.IN)
+print("")
 # GPIO.setup(enable_discover, GPIO.IN)
+print("")
 # GPIO.setup(enable_rts, GPIO.IN)
+print("")
 
 # Made to cancel all threads once particular event happens (in this case, when gpio_enable is set to HIGH)
 stop_threads = threading.Event()
@@ -35,8 +42,11 @@ stop_threads = threading.Event()
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_one(pin):
     # Will run as long as gpio_enable is not set to HIGH
+    global motor_run
     while not stop_threads.is_set():
         print("Function one threading")
+        motor_run += 42
+        print(motor_run)
         pass
 
 
@@ -44,31 +54,40 @@ def function_one(pin):
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_two(pin):
     # Will run as long as gpio_enable is not set to HIGH
+    global motor_run
     while not stop_threads.is_set():
         print("Function two threading")
-        pass
+        motor_run += 1
+        print(motor_run)
 
 
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_three(pin):
     # Will run as long as gpio_enable is not set to HIGH
+    global motor_run
     while not stop_threads.is_set():
         print("Function three threading")
-        pass
+        motor_run -= 9
+        print(motor_run)
 
 
 # def function_four(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_four(pin):
     # Will run as long as gpio_enable is not set to HIGH
+    global motor_run
     while not stop_threads.is_set():
         print("Function four threading")
-        pass
+        print(motor_run)
 
 
 if __name__ == '__main__':
     # Creating threads
+    # args are your args for target thus motor_run, enable_speed_run, enable_discover, and enable_rts are pins into
+    #   their respective targets or functions.
+    # args have to be tuple thus the syntax "(arg,)" is meant to denote a tuple with an argument in index 0 and none
+    #   in index 1: (arg, None)
     thread_one = threading.Thread(target=function_one, args=(motor_run,))
     thread_two = threading.Thread(target=function_two, args=(enable_speed_run,))
     thread_three = threading.Thread(target=function_three, args=(enable_discover,))
@@ -105,3 +124,4 @@ if __name__ == '__main__':
 
     # GPIO cleanup
     # GPIO.cleanup()
+    print("")
