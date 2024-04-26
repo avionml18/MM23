@@ -20,6 +20,8 @@ NEWLINE = "\n"
 # FILENAME_OUTPUT = "Flood_Whole.txt"
 # FILENAME_OUTPUT = "Flood_DPS.txt"
 FILENAME_OUTPUT = "MM23_log.txt"
+
+
 # FILENAME_OUTPUT = "MM23_log_DPS.txt"
 # FILENAME_OUTPUT = "MM23_log_WM.txt"
 
@@ -33,6 +35,15 @@ class Direction(Enum):
     DOWN = 2
     LEFT = 3
     RIGHT = 4
+
+
+class Orientation(Enum):
+    """
+    Probably a better way to indicate directions rather than using enumeration but
+    used in algorithms for logic in directions uses
+    """
+    STRAIGHT = 1
+    NOT_STRAIGHT = 2
 
 
 def run_depth_search_algo(bot, maze):
@@ -335,7 +346,6 @@ def run_whole_maze_algo(bot, maze):
         for j in range(DEFAULT_SIZE):
             if not bot_map[i][j].get_explore() and not bot_map[i][j].get_walls().count(True) == 4:
                 tuple_list.append((i, j))
-
 
     """
     If the bot stops when it arrives in the destination square pointing away from the exit of the destination 

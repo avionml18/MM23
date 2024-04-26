@@ -48,10 +48,9 @@ def run_flood_algo(bot, maze):
     """Assume it's in position to go straight from the start # Orientation Matters!!!"""
     distance = bot_map[x][y].get_distance()
     dir_to_go = ""
-    """Can change to recursion: f(org_x, org_y, dir:int, dest_found/distance)"""
     while distance != 0:
         possible_dir = []
-
+        orientation =
         north, south, west, east = bot_map[x][y].get_walls()
 
         # Analyze choices:
@@ -67,17 +66,6 @@ def run_flood_algo(bot, maze):
         if (y + 1) < DEFAULT_SIZE and not east:
             if bot_map_obj[x, y + 1].get_distance() < distance:
                 possible_dir.append(Direction.RIGHT.name)
-        """
-        Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
-        class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
-            - In reality, we would have a gyro or something to indicate the bot's orientation thus, that
-            would be a factor in this decision        
-                
-            Solution: Handle orientation within the code for the hardware
-            Orientation takes time -> changing direction from what you're doing takes time -> thus, instead of
-            prioritizing straightness in the code (and recoding a bunch), simply prioritize not going in a different
-            direction than what you did before. 
-        """
 
         dir_to_go = random.choice(possible_dir)
 
