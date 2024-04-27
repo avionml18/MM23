@@ -2,7 +2,7 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  2/25/24
+Date (Update):  4/26/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
                 start of the maze or seeing all the maze through the terminal
@@ -35,15 +35,6 @@ class Direction(Enum):
     DOWN = 2
     LEFT = 3
     RIGHT = 4
-
-
-class Orientation(Enum):
-    """
-    Probably a better way to indicate directions rather than using enumeration but
-    used in algorithms for logic in directions uses
-    """
-    STRAIGHT = 1
-    NOT_STRAIGHT = 2
 
 
 def run_depth_search_algo(bot, maze):

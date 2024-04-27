@@ -2,13 +2,24 @@
 File:           Bot.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  11/29/23
+Date (Update):  4/26/24
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Bot for discover.py program.
 """
 
 from Map import *
+
+from enum import Enum
+
+
+class Orientation(Enum):
+    """
+    Probably a better way to indicate directions rather than using enumeration but
+    used in algorithms for logic in directions uses
+    """
+    STRAIGHT = 1
+    NOT_STRAIGHT = 2
 
 
 class Bot:
@@ -22,6 +33,7 @@ class Bot:
         self.left = False
         self.right = False
         self.go = False
+        self.orientation = None
 
         """ bot_map is where the bot is finding a route. It does not know of walls until it hits one """
         self.bot_map: Map = Map()
