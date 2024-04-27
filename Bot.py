@@ -2,24 +2,27 @@
 File:           Bot.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  4/26/24
+Date (Update):  4/27/24
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Bot for discover.py program.
 """
 
 from Map import *
-
 from enum import Enum
 
 
 class Orientation(Enum):
     """
-    Probably a better way to indicate directions rather than using enumeration but
+    Probably a better way to indicate orientations rather than using enumeration but
     used in algorithms for logic in directions uses
     """
-    STRAIGHT = 1
-    NOT_STRAIGHT = 2
+    # The reason for the associations are to make going right +1 and left -1.
+    #   think of each number starting a north as reading the unit circle from left to right.
+    NORTH = 1
+    SOUTH = 3
+    EAST = 2
+    WEST = 4
 
 
 class Bot:
@@ -33,7 +36,7 @@ class Bot:
         self.left = False
         self.right = False
         self.go = False
-        self.orientation = None
+        self.orientation = Orientation.NORTH.value
 
         """ bot_map is where the bot is finding a route. It does not know of walls until it hits one """
         self.bot_map: Map = Map()
@@ -106,6 +109,31 @@ class Bot:
         x_coor, y_coor = x_y_coor
         square_obj = map_object.map[x_coor][y_coor]
         square_obj.set_square(dir_tuple, explored, distance)
+
+    def set_orientation(self, orientate):
+        """
+        This method will set the bot's orientation to one of the four cardinal directions
+        :param orientate: holds what orientation the bot is currently in (ENUM of Orientation_
+        :return: None
+        """
+        self.orientation = orientate
+
+    def get_orientation(self):
+        """
+        This method will return  the bot's orientation to one of the four cardinal directions
+        :return: bot's current orienation (self.orientation)
+        """
+        return self.orientation
+
+    def turn_right(self):
+        self.orientation += 1
+        if self.orientation > Orientation.EAST.value:
+            self.orientation = Orientation.NORTH.value
+
+    def turn_left(self):
+        self.orientation -= 1
+        if self.orientation < Orientation.NORTH.value:
+            self.orientation = Orientation.EAST.value
 
     def __str__(self):
         """

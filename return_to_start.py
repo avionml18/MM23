@@ -10,6 +10,7 @@ Description:    This file will simulate the bot traversing back from the center 
 # import os.path
 from Map import *
 from Colors import *
+from Bot import Orientation
 from enum import Enum
 
 # Constants
@@ -195,6 +196,67 @@ def run_depth_search_algo(bot, maze):
         # write_info(bot_map, x, y, possible_dir, 0, dir_to_go, NOT_END)
 
         ###############################    Actual Maze Interaction     ###############################
+
+        # Orientate the bot to properly go to it's next square
+        # UP and NORTH
+        if dir_to_go == Direction.UP.name and bot.get_orientation() != Orientation.NORTH.value:
+            if bot.get_orientation() == Orientation.WEST.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.EAST.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
+        # DOWN and SOUTH
+        elif dir_to_go == Direction.DOWN.name and bot.get_orientation() != Orientation.SOUTH.value:
+            if bot.get_orientation() == Orientation.WEST.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.EAST.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.NORTH.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
+        # LEFT and WEST
+        elif dir_to_go == Direction.LEFT.name and bot.get_orientation() != Orientation.WEST.value:
+            if bot.get_orientation() == Orientation.NORTH.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.EAST.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
+        # RIGHT and EAST
+        elif dir_to_go == Direction.RIGHT.name and bot.get_orientation() != Orientation.EAST.value:
+            if bot.get_orientation() == Orientation.NORTH.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.WEST.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
 
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
