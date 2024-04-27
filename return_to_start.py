@@ -2,7 +2,7 @@
 File:           return-to-start.py
 Author:         Avion Lowery
 Date (Start):   11/29/23
-Date (Update):  2/25/24
+Date (Update):  4/26/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing back from the center to either the
                 start of the maze or seeing all the maze through the terminal
@@ -10,6 +10,7 @@ Description:    This file will simulate the bot traversing back from the center 
 # import os.path
 from Map import *
 from Colors import *
+from Bot import Orientation
 from enum import Enum
 
 # Constants
@@ -20,6 +21,8 @@ NEWLINE = "\n"
 # FILENAME_OUTPUT = "Flood_Whole.txt"
 # FILENAME_OUTPUT = "Flood_DPS.txt"
 FILENAME_OUTPUT = "MM23_log.txt"
+
+
 # FILENAME_OUTPUT = "MM23_log_DPS.txt"
 # FILENAME_OUTPUT = "MM23_log_WM.txt"
 
@@ -194,6 +197,67 @@ def run_depth_search_algo(bot, maze):
 
         ###############################    Actual Maze Interaction     ###############################
 
+        # Orientate the bot to properly go to it's next square
+        # UP and NORTH
+        if dir_to_go == Direction.UP.name and bot.get_orientation() != Orientation.NORTH.value:
+            if bot.get_orientation() == Orientation.WEST.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.EAST.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
+        # DOWN and SOUTH
+        elif dir_to_go == Direction.DOWN.name and bot.get_orientation() != Orientation.SOUTH.value:
+            if bot.get_orientation() == Orientation.WEST.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.EAST.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.NORTH.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
+        # LEFT and WEST
+        elif dir_to_go == Direction.LEFT.name and bot.get_orientation() != Orientation.WEST.value:
+            if bot.get_orientation() == Orientation.NORTH.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.EAST.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
+        # RIGHT and EAST
+        elif dir_to_go == Direction.RIGHT.name and bot.get_orientation() != Orientation.EAST.value:
+            if bot.get_orientation() == Orientation.NORTH.value:
+                bot.turn_right()
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                bot.turn_left()
+            elif bot.get_orientation() == Orientation.WEST.value:
+                choice = random.choice((True, False))
+                if choice:
+                    bot.turn_right()
+                    bot.turn_right()
+                else:
+                    bot.turn_left()
+                    bot.turn_left()
+
         # Look in the actual maze for walls
         north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
 
@@ -335,7 +399,6 @@ def run_whole_maze_algo(bot, maze):
         for j in range(DEFAULT_SIZE):
             if not bot_map[i][j].get_explore() and not bot_map[i][j].get_walls().count(True) == 4:
                 tuple_list.append((i, j))
-
 
     """
     If the bot stops when it arrives in the destination square pointing away from the exit of the destination 
