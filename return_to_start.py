@@ -177,9 +177,31 @@ def run_depth_search_algo(bot, maze):
                     unexplore_squares.append(Direction.RIGHT.name)
 
             if unexplore_squares:
-                dir_to_go = random.choice(unexplore_squares)
+                # Based on orientation determine if you have a direction to choose from the possible directions
+                if bot.get_orientation() == Orientation.NORTH.value and Direction.UP.name in unexplore_squares:
+                    dir_to_go = Direction.UP.name
+                elif bot.get_orientation() == Orientation.SOUTH.value and Direction.DOWN.name in unexplore_squares:
+                    dir_to_go = Direction.DOWN.name
+                elif bot.get_orientation() == Orientation.WEST.value and Direction.LEFT.name in unexplore_squares:
+                    dir_to_go = Direction.LEFT.name
+                elif bot.get_orientation() == Orientation.EAST.value and Direction.RIGHT.name in unexplore_squares:
+                    dir_to_go = Direction.RIGHT.name
+                # If not, choose at random which direction to go
+                else:
+                    dir_to_go = random.choice(unexplore_squares)
             else:
-                dir_to_go = random.choice(possible_dir)
+                # Based on orientation determine if you have a direction to choose from the possible directions
+                if bot.get_orientation() == Orientation.NORTH.value and Direction.UP.name in possible_dir:
+                    dir_to_go = Direction.UP.name
+                elif bot.get_orientation() == Orientation.SOUTH.value and Direction.DOWN.name in possible_dir:
+                    dir_to_go = Direction.DOWN.name
+                elif bot.get_orientation() == Orientation.WEST.value and Direction.LEFT.name in possible_dir:
+                    dir_to_go = Direction.LEFT.name
+                elif bot.get_orientation() == Orientation.EAST.value and Direction.RIGHT.name in possible_dir:
+                    dir_to_go = Direction.RIGHT.name
+                # If not, choose at random which direction to go
+                else:
+                    dir_to_go = random.choice(possible_dir)
 
             # Intersection storage logic
 
@@ -400,13 +422,6 @@ def run_whole_maze_algo(bot, maze):
             if not bot_map[i][j].get_explore() and not bot_map[i][j].get_walls().count(True) == 4:
                 tuple_list.append((i, j))
 
-    """
-    If the bot stops when it arrives in the destination square pointing away from the exit of the destination 
-    squares then rotate the bot 180 degrees.
-    """
-    """Enter Code for checking orientation + if it's not in the right orientation, then change it"""
-    """Assume it's in position to go straight from the start #Orientation Matters!!!"""
-
     ###############################    Bot's Maze Logic     ###############################
     """ Maybe use boolean flag instead of two "bot_map[x][y].get_start()" or a more "code-y" was to do it """
     while tuple_list and not bot_map[x][y].get_start():
@@ -440,17 +455,8 @@ def run_whole_maze_algo(bot, maze):
             if (y + 1) < DEFAULT_SIZE and not east:
                 if bot_map_obj[x, y + 1].get_distance() < distance:
                     possible_dir.append(Direction.RIGHT.name)
-            """
-            Determine a direction by randomly selecting between two (until orientation is an added attribute of bot
-            class). If you do this, make sure there is a maze to test this orientation attribute thoroughly
-                - In reality, we would have a gyro or something to indicate the bot's orientation thus, that
-                would be a factor in this decision        
-    
-                Solution: Handle orientation within the code for the hardware
-                Orientation takes time -> changing direction from what you're doing takes time -> thus, instead of
-                prioritizing straightness in the code (and recoding a bunch), simply prioritize not going in a different
-                direction than what you did before. 
-            """
+
+
             # Update distance numbers so that they correspond to where the bot can actually go
             if not possible_dir:
                 bot_map_obj.set_distance_nums(x, y)
@@ -458,6 +464,16 @@ def run_whole_maze_algo(bot, maze):
                 #                                          "possible direction" + Colors.reset + NEWLINE)
                 # write_to_file(NEWLINE + "Had to update distance numbers due to not having any "
                 #                         "possible direction" + NEWLINE + NEWLINE)
+            # Based on orientation determine if you have a direction to choose from the possible directions
+            elif bot.get_orientation() == Orientation.NORTH.value and Direction.UP.name in possible_dir:
+                dir_to_go = Direction.UP.name
+            elif bot.get_orientation() == Orientation.SOUTH.value and Direction.DOWN.name in possible_dir:
+                dir_to_go = Direction.DOWN.name
+            elif bot.get_orientation() == Orientation.WEST.value and Direction.LEFT.name in possible_dir:
+                dir_to_go = Direction.LEFT.name
+            elif bot.get_orientation() == Orientation.EAST.value and Direction.RIGHT.name in possible_dir:
+                dir_to_go = Direction.RIGHT.name
+            # If not, choose at random which direction to go
             else:
                 dir_to_go = random.choice(possible_dir)
 
@@ -470,6 +486,67 @@ def run_whole_maze_algo(bot, maze):
             # write_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
 
             ###############################    Actual Maze Interaction     ###############################
+
+            # Orientate the bot to properly go to it's next square
+            # UP and NORTH
+            if dir_to_go == Direction.UP.name and bot.get_orientation() != Orientation.NORTH.value:
+                if bot.get_orientation() == Orientation.WEST.value:
+                    bot.turn_right()
+                elif bot.get_orientation() == Orientation.EAST.value:
+                    bot.turn_left()
+                elif bot.get_orientation() == Orientation.SOUTH.value:
+                    choice = random.choice((True, False))
+                    if choice:
+                        bot.turn_right()
+                        bot.turn_right()
+                    else:
+                        bot.turn_left()
+                        bot.turn_left()
+
+            # DOWN and SOUTH
+            elif dir_to_go == Direction.DOWN.name and bot.get_orientation() != Orientation.SOUTH.value:
+                if bot.get_orientation() == Orientation.WEST.value:
+                    bot.turn_left()
+                elif bot.get_orientation() == Orientation.EAST.value:
+                    bot.turn_right()
+                elif bot.get_orientation() == Orientation.NORTH.value:
+                    choice = random.choice((True, False))
+                    if choice:
+                        bot.turn_right()
+                        bot.turn_right()
+                    else:
+                        bot.turn_left()
+                        bot.turn_left()
+
+            # LEFT and WEST
+            elif dir_to_go == Direction.LEFT.name and bot.get_orientation() != Orientation.WEST.value:
+                if bot.get_orientation() == Orientation.NORTH.value:
+                    bot.turn_left()
+                elif bot.get_orientation() == Orientation.SOUTH.value:
+                    bot.turn_right()
+                elif bot.get_orientation() == Orientation.EAST.value:
+                    choice = random.choice((True, False))
+                    if choice:
+                        bot.turn_right()
+                        bot.turn_right()
+                    else:
+                        bot.turn_left()
+                        bot.turn_left()
+
+            # RIGHT and EAST
+            elif dir_to_go == Direction.RIGHT.name and bot.get_orientation() != Orientation.EAST.value:
+                if bot.get_orientation() == Orientation.NORTH.value:
+                    bot.turn_right()
+                elif bot.get_orientation() == Orientation.SOUTH.value:
+                    bot.turn_left()
+                elif bot.get_orientation() == Orientation.WEST.value:
+                    choice = random.choice((True, False))
+                    if choice:
+                        bot.turn_right()
+                        bot.turn_right()
+                    else:
+                        bot.turn_left()
+                        bot.turn_left()
 
             # Look in the actual maze for walls
             north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
