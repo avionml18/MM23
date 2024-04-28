@@ -88,7 +88,7 @@ def run_flood_algo(bot, maze):
         # print_distance_outputs(bot_map, x, y)
         # write_distance_outputs(bot_map, x, y)
 
-        # print_info(bot_map, x, y, [], distance, dir_to_go, END)
+        # print_info(bot_map, x, y, possible_dir, distance, dir_to_go, NOT_END)
         # write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
         ###############################    Actual Maze Interaction     ###############################
@@ -238,7 +238,7 @@ def run_flood_algo(bot, maze):
     # print_distance_outputs(bot_map, x, y)
     write_distance_outputs(bot_map, x, y)
 
-    # print_info(bot_map, x, y, [], distance, dir_to_go, END)
+    # print_info(bot_map, x, y, possible_dir, distance, dir_to_go, END)
     write_info(bot_map, x, y, [], distance, dir_to_go, END)
 
 

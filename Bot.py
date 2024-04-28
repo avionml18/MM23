@@ -7,7 +7,7 @@ Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Bot for discover.py program.
 """
-
+from Colors import *
 from Map import *
 from enum import Enum
 
@@ -126,14 +126,27 @@ class Bot:
         return self.orientation
 
     def turn_right(self):
+        # print(fg.red + "Rotate RIGHT" + Colors.reset)
         self.orientation += 1
-        if self.orientation > Orientation.EAST.value:
+        if self.orientation > Orientation.WEST.value:
             self.orientation = Orientation.NORTH.value
 
     def turn_left(self):
         self.orientation -= 1
+        # print(fg.red + "Rotate LEFT" + Colors.reset)
+
         if self.orientation < Orientation.NORTH.value:
-            self.orientation = Orientation.EAST.value
+            self.orientation = Orientation.WEST.value
+
+    def print_orientation(self):
+        if self.orientation == Orientation.NORTH.value:
+            print(Orientation.NORTH.name)
+        elif self.orientation == Orientation.SOUTH.value:
+            print(Orientation.SOUTH.name)
+        elif self.orientation == Orientation.WEST.value:
+            print(Orientation.WEST.name)
+        elif self.orientation == Orientation.EAST.value:
+            print(Orientation.EAST.name)
 
     def __str__(self):
         """
