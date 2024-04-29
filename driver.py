@@ -1,60 +1,71 @@
-'''
-Created on Oct 25, 2023
+"""
+File:           discover.py
+Authors:        Tim Weir, Avion Lowery
+Date (Start):   4/1/24
+Date (Update):  4/4/24
+Email:          <Tim's Email>, alowery1@umbc.edu or avion.m.lowery@gmail.com
+Description:    This file will be what the bot will use to run our programs. 
+"""
+from discover import *
+if __name__ == "__main__":
+    """ Things below this main will eventually be in the *driver.py" program. """
 
-@author: Timbo
-'''
-class Square:
-    WallNorth = 0
-    WallSouth = 0
-    WallWest = 0
-    WallEast = 0
-    Start = 0
-    Finish = 0
-    ShortestPath = 14
-    Explored = 1   
+    # Make an instance of Map to represent the actual maze
+    maze_1 = Map()
+    maze_1.make_maze_map()
 
-mazeSize = 4
-maze = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
-for i in range(4):
-    for j in range(4):
-        maze[i][j] = Square()
-maze[0][0].Start = 1
-maze[3][3].Finish = 1
-for i in range(4):
-    maze[i][0].WallNorth = 1
-    maze[i][3].WallSouth = 1
-    maze[0][i].WallWest = 1
-    maze[3][i].WallEast = 1
-maze[0][0].WallSouth = 1
-maze[2][0].WallSouth = 1
-maze[0][1].WallNorth = 1
-maze[0][1].WallEast = 1
-maze[1][1].WallWest = 1
-maze[1][1].WallSouth = 1
-maze[2][1].WallNorth = 1
-maze[2][1].WallEast = 1
-maze[3][1].WallWest = 1
-maze[1][2].WallNorth = 1
-maze[1][2].WallSouth = 1
-maze[2][2].WallSouth = 1
-maze[2][2].WallEast = 1
-maze[3][2].WallWest = 1
-maze[3][2].WallSouth = 1
-maze[1][3].WallNorth = 1
-maze[2][3].WallNorth = 1
-maze[3][3].WallNorth = 1
+    # Make a bot instance to represent the bot itself
+    bot_1 = Bot()
+    # Set the bot's starting square to the same starting square in the maze
+    # Make the bot's map by populating with the distance numbers
+    bot_map_obj = bot_1.bot_map
 
-directions = ['X']*(mazeSize*mazeSize)
-instructions = ['X']*maze[3][3].ShortestPath
+    bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
+    is_maze = False
+    bot_map_obj.make_starting_square(is_maze)
+    startx, starty = maze_1.get_bot_loc()
 
-if __name__ == '__main__':
-    speedrun(0,0,0) #param is starting location and current shortest path (0)
-    for i in range(4):
-        #for j in range(4):
-        print(maze[0][i].ShortestPath, maze[1][i].ShortestPath, maze[2][i].ShortestPath, maze[3][i].ShortestPath)
-    generate_directions(3,3)#param is location of finish
-    print(directions)
-    generate_instructions(3,3)#param is the location of the finish block
+    # Run the flood fill algorithm
+    run_flood_algo(bot_1, maze_1)
+    finishx, finishy = maze_1.get_bot_loc()
+
+    # Run the whole maze algorithm
+    # run_whole_maze_algo(bot_1, maze_1)
+
+    # Run the depth-first search fill algorithm
+    run_depth_search_algo(bot_1, maze_1)
+
+
+    # SpeedRun
+    speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
+
+    for i in range(DEFAULT_SIZE):
+        # for j in range(4):
+        print(i, end=": ")
+        for j in range(DEFAULT_SIZE):
+            if (bot_map_obj[i, j].shortest_route) < 10:
+                print(f" {bot_map_obj[i, j].shortest_route}", end='   |  ')
+            elif (bot_map_obj[i, j].shortest_route) < 100:
+                print(f" {bot_map_obj[i, j].shortest_route}", end='  |  ')
+            else:
+                print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
+        print()
+        print("    ------------------------------------------------------------------------------------------")
+
+    directions = ['X'] * bot_map_obj[finishx, finishy].shortest_route
+
+    generate_directions(finishy, finishx, bot_map_obj, directions, len(directions)-1)
+    startIndex = 0
+    while directions[startIndex] == 'X':
+        startIndex += 1
+    directionsNew = ['X'] * (len(directions) - startIndex)
+    for i in range(len(directions)-startIndex):
+        directionsNew[i] = directions[startIndex+i]
+
+    instructions = ['X'] * len(directionsNew)
+    generate_instructions(finishy, finishx, bot_map_obj, directionsNew, instructions)
+
+    # prints shortest path of each square in the maze
+
+    print(directionsNew)
     print(instructions)
-
-
