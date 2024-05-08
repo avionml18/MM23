@@ -4,110 +4,117 @@
 
 # Importing required libraries
 import threading
-import logging
-from SpeedRun import *
-from discover import *
-import time
+import RPi.GPIO as GPIO
 
-gpio_enable = 22  # Set enabler to determine when to stop threading, change to your preference
-# Rest of GPIO pins below may/ may not be useful, I added them because it might be helpful to assign a pin to indicate
-# when to run a functionality
-motor_run = 23
-enable_speed_run = 24
-enable_discover = 25
-enable_rts = 26
+GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
+
+# setting pins for different operational modes
+enable_speed_run = 6
+enable_discover = 5
+enable_rts_whole = 13
+enable_rts_dfs = 12
+shutdown = 26
 
 # GPIO setup(s)
 print("")
-# GPIO.setmode(GPIO.BCM)
+GPIO.setup(enable_speed_run, GPIO.IN)
 print("")
-# GPIO.setup(forwardPin, GPIO.OUT)
+GPIO.setup(enable_discover, GPIO.IN)
 print("")
-# GPIO.setup(backwardPin, GPIO.OUT)
+GPIO.setup(enable_rts_dfs, GPIO.IN)
 print("")
-# GPIO.setup(enable_speed_run, GPIO.IN)
+GPIO.setup(enable_rts_whole, GPIO.IN)
 print("")
-# GPIO.setup(enable_discover, GPIO.IN)
-print("")
-# GPIO.setup(enable_rts, GPIO.IN)
+GPIO.setup(shutdown, GPIO.IN)
 print("")
 
 # Made to cancel all threads once particular event happens (in this case, when gpio_enable is set to HIGH)
 stop_threads = threading.Event()
 
 
-# Skeleton Code below, complete to your preference
-
 # def function_one(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_one(pin):
-    # Will run as long as gpio_enable is not set to HIGH
-    global motor_run
-    while not stop_threads.is_set():
-        print("Function one threading")
-        motor_run += 42
-        print(motor_run)
-        pass
+    print("Running flood algo")
+    # run_flood_algo(bot_1, maze_1)
+    # global finishx, finishy = maze_1.get_bot_loc()
 
 
 # def function_two(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_two(pin):
-    # Will run as long as gpio_enable is not set to HIGH
-    global motor_run
-    while not stop_threads.is_set():
-        print("Function two threading")
-        motor_run += 1
-        print(motor_run)
-
+    print("Running Speedrun")
+    # speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
+    # new_directions()
 
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_three(pin):
-    # Will run as long as gpio_enable is not set to HIGH
-    global motor_run
-    while not stop_threads.is_set():
-        print("Function three threading")
-        motor_run -= 9
-        print(motor_run)
+    print("Running Whole Maze Algo")
+    # run_flood_algo(bot_1, maze_1)
+    # global finishx, finishy = maze_1.get_bot_loc()
+    # run_whole_maze_algo(bot_1, maze_1)
 
 
 # def function_four(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_four(pin):
-    # Will run as long as gpio_enable is not set to HIGH
-    global motor_run
-    while not stop_threads.is_set():
-        print("Function four threading")
-        print(motor_run)
+    print("Running DFS")
+    # run_flood_algo(bot_1, maze_1)
+    # global finishx, finishy = maze_1.get_bot_loc()
+    # run_depth_search_algo(bot_1, maze_1)
 
 
-if __name__ == '__main__':
-    # Creating threads
+def thread_loop():    # Creating threads
     # args are your args for target thus motor_run, enable_speed_run, enable_discover, and enable_rts are pins into
     #   their respective targets or functions.
     # args have to be tuple thus the syntax "(arg,)" is meant to denote a tuple with an argument in index 0 and none
     #   in index 1: (arg, None)
-    thread_one = threading.Thread(target=function_one, args=(motor_run,))
+    thread_one = threading.Thread(target=function_one, args=(enable_discover,))
     thread_two = threading.Thread(target=function_two, args=(enable_speed_run,))
-    thread_three = threading.Thread(target=function_three, args=(enable_discover,))
-    thread_four = threading.Thread(target=function_four, args=(enable_rts,))
+    thread_three = threading.Thread(target=function_three, args=(enable_rts_whole,))
+    thread_four = threading.Thread(target=function_four, args=(enable_rts_dfs,))
 
     # Starting threads
-    thread_one.start()
-    thread_two.start()
-    thread_three.start()
-    thread_four.start()
+    lock = 0
+    # "Standby Mode" loop. Continuously checks for GPIO mode selection.
+    while not GPIO.input(shutdown):
+        if GPIO.input(enable_discover) and lock == 0:
+            lock = 1
+            thread_one.start()
 
-    # def gpio_cancel_threads()
-    # Checks if gpio_enable is set to HIGH, if it's high then stop_threads is triggered and cancels all threads
-    # Otherwise, function waits 0.1ms before checking again
-    # def gpio_cancel_threads():
-    #     while True:
-    #         if GPIO.input(gpio_enable) == GPIO.HIGH:
-    #             stop_threads.set()
-    #             break
-    #             time.sleep(0.1)
+        if GPIO.input(enable_speed_run) and lock == 0:
+            lock = 2
+            thread_two.start()
+
+        if GPIO.input(enable_rts_whole) and lock == 0:
+            lock = 3
+            thread_three.start()
+
+        if GPIO.input(enable_rts_dfs) and lock == 0:
+            lock = 4
+            thread_four.start()
+
+        if lock == 1:
+            if not GPIO.input(enable_discover):
+                print("Stopping Discover")
+                thread_one.join()
+                lock = 0
+        elif lock == 2:
+            if not GPIO.input(enable_speed_run):
+                print("Stopping Speedrun")
+                thread_two.join()
+                lock = 0
+        elif lock == 3:
+            if not GPIO.input(enable_rts_whole):
+                print("Stopping Whole Maze")
+                thread_three.join()
+                lock = 0
+        elif lock == 4:
+            if not GPIO.input(enable_rts_dfs):
+                print("Stopping DFS")
+                thread_four.join()
+                lock = 0
 
     # Creating + Starting cancel thread checker
     gpio_monitor_threads = threading.Thread(target=gpio_enable)
@@ -116,12 +123,6 @@ if __name__ == '__main__':
     # Joining all threads, end of threading
     gpio_monitor_threads.join()
 
-    # Join threads
-    thread_one.join()
-    thread_two.join()
-    thread_three.join()
-    thread_four.join()
-
     # GPIO cleanup
-    # GPIO.cleanup()
+    GPIO.cleanup()
     print("")

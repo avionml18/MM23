@@ -7,8 +7,10 @@ Email:          <Tim's Email>, alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will be what the bot will use to run our programs. 
 """
 from discover import *
+from thread_ptc_sim import *
+
+
 if __name__ == "__main__":
-    """ Things below this main will eventually be in the *driver.py" program. """
 
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
@@ -25,47 +27,7 @@ if __name__ == "__main__":
     bot_map_obj.make_starting_square(is_maze)
     startx, starty = maze_1.get_bot_loc()
 
-    # Run the flood fill algorithm
-    run_flood_algo(bot_1, maze_1)
-    finishx, finishy = maze_1.get_bot_loc()
+    thread_loop()
 
-    # Run the whole maze algorithm
-    # run_whole_maze_algo(bot_1, maze_1)
-
-    # Run the depth-first search fill algorithm
-    run_depth_search_algo(bot_1, maze_1)
-
-
-    # SpeedRun
-    speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
-
-    for i in range(DEFAULT_SIZE):
-        # for j in range(4):
-        print(i, end=": ")
-        for j in range(DEFAULT_SIZE):
-            if (bot_map_obj[i, j].shortest_route) < 10:
-                print(f" {bot_map_obj[i, j].shortest_route}", end='   |  ')
-            elif (bot_map_obj[i, j].shortest_route) < 100:
-                print(f" {bot_map_obj[i, j].shortest_route}", end='  |  ')
-            else:
-                print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
-        print()
-        print("    ------------------------------------------------------------------------------------------")
-
-    directions = ['X'] * bot_map_obj[finishx, finishy].shortest_route
-
-    generate_directions(finishy, finishx, bot_map_obj, directions, len(directions)-1)
-    startIndex = 0
-    while directions[startIndex] == 'X':
-        startIndex += 1
-    directionsNew = ['X'] * (len(directions) - startIndex)
-    for i in range(len(directions)-startIndex):
-        directionsNew[i] = directions[startIndex+i]
-
-    instructions = ['X'] * len(directionsNew)
-    generate_instructions(finishy, finishx, bot_map_obj, directionsNew, instructions)
-
-    # prints shortest path of each square in the maze
-
-    print(directionsNew)
-    print(instructions)
+    # Printing SpeedRun
+    # print_speedrun()

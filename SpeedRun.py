@@ -4,6 +4,8 @@
 # y-coord: y-coordinate of current square
 # currpath: shortest path to the current square
 # output: updated ShortestPath value of all explored squares
+
+
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
     straight_weight = 1
     turn_weight = 2
@@ -117,3 +119,37 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
                 instructions[i] = 2
             elif directions[i] == 'west' and directions[i - 1] == 'north':
                 instructions[i] = 1
+
+
+def new_directions():
+    global finishx, finishy, DEFAULT_SIZE, bot_map_obj
+    for i in range(DEFAULT_SIZE):
+        # for j in range(4):
+        print(i, end=": ")
+        for j in range(DEFAULT_SIZE):
+            if (bot_map_obj[i, j].shortest_route) < 10:
+                print(f" {bot_map_obj[i, j].shortest_route}", end='   |  ')
+            elif (bot_map_obj[i, j].shortest_route) < 100:
+                print(f" {bot_map_obj[i, j].shortest_route}", end='  |  ')
+            else:
+                print(f" {bot_map_obj[i, j].shortest_route}", end=' |  ')
+        print()
+        print("    ------------------------------------------------------------------------------------------")
+
+    directions = ['X'] * bot_map_obj[finishx, finishy].shortest_route
+
+    generate_directions(finishy, finishx, bot_map_obj, directions, len(directions)-1)
+    startIndex = 0
+    while directions[startIndex] == 'X':
+        startIndex += 1
+    directionsNew = ['X'] * (len(directions) - startIndex)
+    for i in range(len(directions)-startIndex):
+        directionsNew[i] = directions[startIndex+i]
+
+    instructions = ['X'] * len(directionsNew)
+    generate_instructions(finishy, finishx, bot_map_obj, directionsNew, instructions)
+
+    # prints shortest path of each square in the maze
+
+    print(directionsNew)
+    print(instructions)
