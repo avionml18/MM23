@@ -70,10 +70,6 @@ def thread_loop():    # Creating threads
     #   their respective targets or functions.
     # args have to be tuple thus the syntax "(arg,)" is meant to denote a tuple with an argument in index 0 and none
     #   in index 1: (arg, None)
-    thread_one = threading.Thread(target=function_one, args=(enable_discover,))
-    thread_two = threading.Thread(target=function_two, args=(enable_speed_run,))
-    thread_three = threading.Thread(target=function_three, args=(enable_rts_whole,))
-    thread_four = threading.Thread(target=function_four, args=(enable_rts_dfs,))
 
     # Starting threads
     lock = 0
@@ -81,18 +77,22 @@ def thread_loop():    # Creating threads
     while not GPIO.input(shutdown):
         if GPIO.input(enable_discover) and lock == 0:
             lock = 1
+            thread_one = threading.Thread(target=function_one, args=(enable_discover,))
             thread_one.start()
 
         if GPIO.input(enable_speed_run) and lock == 0:
             lock = 2
+            thread_two = threading.Thread(target=function_two, args=(enable_speed_run,))
             thread_two.start()
 
         if GPIO.input(enable_rts_whole) and lock == 0:
             lock = 3
+            thread_three = threading.Thread(target=function_three, args=(enable_rts_whole,))
             thread_three.start()
 
         if GPIO.input(enable_rts_dfs) and lock == 0:
             lock = 4
+            thread_four = threading.Thread(target=function_four, args=(enable_rts_dfs,))
             thread_four.start()
 
         if lock == 1:
