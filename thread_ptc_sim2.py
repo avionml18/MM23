@@ -15,6 +15,24 @@ enable_rts_whole = 13
 enable_rts_dfs = 12
 shutdown = 26
 
+# testing
+global maze_1, bot_1, bot_map_obj, startx, starty, is_maze
+# Make an instance of Map to represent the actual maze
+maze_1 = Map()
+maze_1.make_maze_map()
+
+# Make a bot instance to represent the bot itself
+bot_1 = Bot()
+# Set the bot's starting square to the same starting square in the maze
+# Make the bot's map by populating with the distance numbers
+bot_map_obj = bot_1.bot_map
+
+bot_map_obj.set_bot_loc(maze_1.get_bot_loc())
+is_maze = False
+bot_map_obj.make_starting_square(is_maze)
+startx, starty = maze_1.get_bot_loc()
+
+# end testing
 
 # Made to cancel all threads once particular event happens (in this case, when gpio_enable is set to HIGH)
 stop_threads = threading.Event()
@@ -113,3 +131,6 @@ def thread_loop_sim():    # Creating threads
         temp += 1
 
     print("Threading Done")
+
+
+thread_loop_sim()

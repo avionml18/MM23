@@ -10,8 +10,15 @@ from discover import *
 # from thread_ptc_sim import *
 from thread_ptc_sim2 import *
 
-if __name__ == "__main__":
+maze_1 = 0
+bot_1 = 0
+bot_map_obj = 0
+startx = 0
+starty = 0
+is_maze = 0
 
+if __name__ == "__main__":
+    global maze_1, bot_1, bot_map_obj, startx, starty, is_maze
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()

@@ -245,6 +245,7 @@ def run_flood_algo(bot, maze):
 """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
 if __name__ == "__main__":
+    global finishx, finishy
     """ Things below this main will eventually be in the *driver.py" program. """
 
     # Make an instance of Map to represent the actual maze
