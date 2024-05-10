@@ -7,8 +7,8 @@ Email:          <Tim's Email>, alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will be what the bot will use to run our programs. 
 """
 from discover import *
-from thread_ptc_sim import *
-
+# from thread_ptc_sim import *
+from thread_ptc_sim2 import *
 
 if __name__ == "__main__":
 
@@ -27,7 +27,8 @@ if __name__ == "__main__":
     bot_map_obj.make_starting_square(is_maze)
     startx, starty = maze_1.get_bot_loc()
 
-    thread_loop()
+    # thread_loop()
+    thread_loop_sim()
 
     # Printing SpeedRun
     # print_speedrun()
