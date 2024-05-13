@@ -23,7 +23,6 @@ from Square import *
 
 # DEFAULT_SIZE = 8
 # FILENAME = ""
-
 DEFAULT_SIZE = 16
 FILENAME = "maze2.txt"
 

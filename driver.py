@@ -7,18 +7,11 @@ Email:          <Tim's Email>, alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will be what the bot will use to run our programs. 
 """
 from discover import *
-# from thread_ptc_sim import *
-from thread_ptc_sim2 import *
-
-maze_1 = 0
-bot_1 = 0
-bot_map_obj = 0
-startx = 0
-starty = 0
-is_maze = 0
+from thread_ptc_sim import *
+# from thread_ptc_sim2 import *
 
 if __name__ == "__main__":
-    global maze_1, bot_1, bot_map_obj, startx, starty, is_maze
+    # global maze_1, bot_1, bot_map_obj, startx, starty, is_maze
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
     maze_1.make_maze_map()
@@ -34,8 +27,8 @@ if __name__ == "__main__":
     bot_map_obj.make_starting_square(is_maze)
     startx, starty = maze_1.get_bot_loc()
 
-    # thread_loop()
-    thread_loop_sim()
+    thread_loop()
+    # thread_loop_sim()
 
     # Printing SpeedRun
     # print_speedrun()

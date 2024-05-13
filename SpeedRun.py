@@ -4,7 +4,8 @@
 # y-coord: y-coordinate of current square
 # currpath: shortest path to the current square
 # output: updated ShortestPath value of all explored squares
-
+from Map import *
+# from thread_ptc_sim2 import *
 
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
     straight_weight = 1
@@ -121,8 +122,8 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
                 instructions[i] = 1
 
 
-def new_directions():
-    global finishx, finishy, DEFAULT_SIZE, bot_map_obj
+def new_directions(finishx, finishy, bot_map_obj):
+    # global finishx, finishy, DEFAULT_SIZE, bot_map_obj
     for i in range(DEFAULT_SIZE):
         # for j in range(4):
         print(i, end=": ")

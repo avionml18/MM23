@@ -5,6 +5,7 @@
 # Importing required libraries
 import threading
 import RPi.GPIO as GPIO
+import time
 
 GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
 
@@ -115,7 +116,7 @@ def thread_loop():    # Creating threads
                 print("Stopping DFS")
                 thread_four.join()
                 lock = 0
-
+        time.sleep(0.5)
     # Creating + Starting cancel thread checker
     gpio_monitor_threads = threading.Thread(target=gpio_enable)
     gpio_monitor_threads.start()

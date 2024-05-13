@@ -16,7 +16,7 @@ enable_rts_dfs = 12
 shutdown = 26
 
 # testing
-global maze_1, bot_1, bot_map_obj, startx, starty, is_maze
+# global maze_1, bot_1, bot_map_obj, startx, starty, is_maze
 # Make an instance of Map to represent the actual maze
 maze_1 = Map()
 maze_1.make_maze_map()
@@ -42,7 +42,7 @@ stop_threads = threading.Event()
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_one(pin):
     print("Running flood algo")
-    global bot_1, maze_1, finishx, finishy
+    global finishx, finishy
     run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
 
@@ -50,25 +50,25 @@ def function_one(pin):
 # def function_two(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_two(pin):
-    global starty, startx, bot_map_obj
+    # global starty, startx, bot_map_obj
     print("Running Speedrun")
     speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
-    new_directions()
+    new_directions(finishx, finishy, bot_map_obj)
 
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_three(pin):
-    global bot_1, maze_1, finishx, finishy
+    # global bot_1, maze_1, finishx, finishy
     print("Running Whole Maze Algo")
-    run_flood_algo(bot_1, maze_1)
-    finishx, finishy = maze_1.get_bot_loc()
-    run_whole_maze_algo(bot_1, maze_1)
+    # run_flood_algo(bot_1, maze_1)
+    # finishx, finishy = maze_1.get_bot_loc()
+    # run_whole_maze_algo(bot_1, maze_1)
 
 
 # def function_four(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_four(pin):
-    global bot_1, maze_1, finishx, finishy
+    global finishx, finishy
     print("Running DFS")
     run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
