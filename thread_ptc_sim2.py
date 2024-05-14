@@ -45,6 +45,7 @@ def function_one(pin):
     global finishx, finishy
     run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
+    print("Flood Complete")
 
 
 # def function_two(<param>)
@@ -54,6 +55,8 @@ def function_two(pin):
     print("Running Speedrun")
     speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
     new_directions(finishx, finishy, bot_map_obj)
+    print("Speedrun Complete")
+
 
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
@@ -63,6 +66,7 @@ def function_three(pin):
     # run_flood_algo(bot_1, maze_1)
     # finishx, finishy = maze_1.get_bot_loc()
     # run_whole_maze_algo(bot_1, maze_1)
+    print("Whole Maze Complete")
 
 
 # def function_four(<param>)
@@ -73,6 +77,7 @@ def function_four(pin):
     run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
     run_depth_search_algo(bot_1, maze_1)
+    print("DFS Compelte")
 
 
 def thread_loop_sim():    # Creating threads
