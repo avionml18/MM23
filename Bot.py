@@ -10,6 +10,7 @@ Description:    This program will have the class Bot for discover.py program.
 from Colors import *
 from Map import *
 from enum import Enum
+from motorCode5 import *
 
 
 class Orientation(Enum):
@@ -52,6 +53,8 @@ class Bot:
         """
         # This is for telling the motors to start going for a certain amount.
         # self.go = True
+
+        move_motor('f', 1) # duration for 1 second
 
         # Gather original location data and update the next square location
         bot_org_x, bot_org_y = self.bot_map.get_bot_loc()
@@ -131,12 +134,16 @@ class Bot:
         if self.orientation > Orientation.WEST.value:
             self.orientation = Orientation.NORTH.value
 
+        move_motor('R', 1)  # Duration is in seconds (1 second)
+
     def turn_left(self):
         self.orientation -= 1
         # print(fg.red + "Rotate LEFT" + Colors.reset)
 
         if self.orientation < Orientation.NORTH.value:
             self.orientation = Orientation.WEST.value
+
+        move_motor('L', 1)  # Duration is in seconds (1 second)
 
     def print_orientation(self):
         if self.orientation == Orientation.NORTH.value:
