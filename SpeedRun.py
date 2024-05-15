@@ -6,7 +6,6 @@
 # output: updated ShortestPath value of all explored squares
 from Map import *
 from motorCode5 import *
-# from thread_ptc_sim2 import *
 
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
     straight_weight = 1
@@ -101,7 +100,7 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
         # turn right = 2
         # Note: These will be changed to match proper motor control syntax
         if i == 0:
-            instructions[i] = 0
+            instructions[i] = 'f'
         else:
             if directions[i] == directions[i - 1]:
                 instructions[i] = 'f'
@@ -155,8 +154,28 @@ def new_directions(finishx, finishy, bot_map_obj):
 
     print(directionsNew)
     print(instructions)
+
     i = 0
+    j = 0
+    dur = 1
+    newinstructions = [0] * (len(instructions))
+    durations = [0] * (len(instructions))
+    while i < len(instructions):
+        newinstructions[j] = instructions[i]
+        while i+1 < len(instructions) and instructions[i+1] == newinstructions[j]:
+            i += 1
+            dur += 1
+        durations[j] = dur
+        dur = 1
+        j += 1
+        i += 1
+
+
+    print(newinstructions)
+    print(durations)
+    i = 0
+
     move_motor('h', 1)
-    while instructions[i]:
-        move_motor(instructions[i], 1)
+    while newinstructions[i] != 0:
+        move_motor(newinstructions[i], durations[i])
         i += 1
