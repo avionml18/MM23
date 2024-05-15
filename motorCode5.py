@@ -6,13 +6,13 @@ from time import sleep
 in1 = 24
 in2 = 23
 en = 25
-temp1=1
+temp1 = 1
 
 # Motor pin assignments for motor 2
 in3 = 17
 in4 = 27
 en2 = 22
-temp2=1
+temp2 = 1
 
 # Sensor initial state and GPIO pin (to be defined)
 sen1 = False
@@ -52,10 +52,19 @@ p2 = GPIO.PWM(en2, 1000)  # Setup PWM with 1000Hz frequency
 p.start(25)
 p2.start(25)
 
-print("\nThe default speed & direction of motor is LOW & Forward.....")
-print("r-run s-stop f-forward b-backward R-Right turn L-Left turn l-low m-medium h-high e-exit\n")    
 
-while True:
+def stopping():
+    GPIO.output(in1, GPIO.LOW)
+    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in3, GPIO.LOW)
+    GPIO.output(in4, GPIO.LOW)
+
+
+# print("\nThe default speed & direction of motor is LOW & Forward.....")
+# print("r-run s-stop f-forward b-backward R-Right turn L-Left turn l-low m-medium h-high e-exit\n")
+
+
+def move_motor(x,duration):
     """"
     # Sensor detection check
     if GPIO.input(0):
@@ -79,26 +88,26 @@ while True:
         sen3 = False
     time.sleep(0.2)
   """
-    x = input()
-    if x == 'r':
-        print("run")
-        if temp1 == 1:
-            GPIO.output(in1, GPIO.HIGH)
-            GPIO.output(in2, GPIO.LOW)
-            GPIO.output(in3, GPIO.LOW)
-            GPIO.output(in4, GPIO.HIGH)
-            print("forward")
-        else:
-            GPIO.output(in1, GPIO.LOW)
-            GPIO.output(in2, GPIO.HIGH)
-            print("backward")
+    # if x == 'r':
+    #     print("run")
+    #     if temp1 == 1:
+    #         GPIO.output(in1, GPIO.HIGH)
+    #         GPIO.output(in2, GPIO.LOW)
+    #         GPIO.output(in3, GPIO.LOW)
+    #         GPIO.output(in4, GPIO.HIGH)
+    #         print("forward")
+    #     else:
+    #         GPIO.output(in1, GPIO.LOW)
+    #         GPIO.output(in2, GPIO.HIGH)
+    #         print("backward")
 
-    elif x == 's':
+    if x == 's':
         print("stop")
         GPIO.output(in1, GPIO.LOW)
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.LOW)
+        time.sleep(duration)
 
     elif x == 'f':
         print("forward")
@@ -106,6 +115,8 @@ while True:
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.HIGH)
+        time.sleep(duration)
+        stopping()
         temp1 = 1
 
     elif x == 'b':
@@ -114,6 +125,8 @@ while True:
         GPIO.output(in2, GPIO.HIGH)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
+        time.sleep(duration)
+        stopping()
         temp1 = 0
 
     elif x == 'R':
@@ -122,6 +135,8 @@ while True:
         GPIO.output(in2, GPIO.HIGH)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.HIGH)
+        time.sleep(duration)
+        stopping()
 
     elif x == 'L':
         print("left turn")
@@ -129,6 +144,8 @@ while True:
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
+        time.sleep(duration)
+        stopping()
 
     elif x == 'l':
         print("low")
@@ -148,8 +165,10 @@ while True:
     elif x == 'e':
         GPIO.cleanup()
         print("GPIO Clean up")
-        break
 
     else:
         print("<<<  wrong data  >>>")
         print("please enter the defined data to continue.....")
+
+
+move_motor('r', 10)
