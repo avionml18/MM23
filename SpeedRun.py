@@ -5,6 +5,7 @@
 # currpath: shortest path to the current square
 # output: updated ShortestPath value of all explored squares
 from Map import *
+from motorCode5 import *
 # from thread_ptc_sim2 import *
 
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
@@ -103,23 +104,23 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
             instructions[i] = 0
         else:
             if directions[i] == directions[i - 1]:
-                instructions[i] = 0
+                instructions[i] = 'f'
             elif directions[i] == 'north' and directions[i - 1] == 'west':
-                instructions[i] = 2
+                instructions[i] = 'r'
             elif directions[i] == 'north' and directions[i - 1] == 'east':
-                instructions[i] = 1
+                instructions[i] = 'l'
             elif directions[i] == 'south' and directions[i - 1] == 'east':
-                instructions[i] = 2
+                instructions[i] = 'r'
             elif directions[i] == 'south' and directions[i - 1] == 'west':
-                instructions[i] = 1
+                instructions[i] = 'l'
             elif directions[i] == 'east' and directions[i - 1] == 'north':
-                instructions[i] = 2
+                instructions[i] = 'r'
             elif directions[i] == 'east' and directions[i - 1] == 'south':
-                instructions[i] = 1
+                instructions[i] = 'l'
             elif directions[i] == 'west' and directions[i - 1] == 'south':
-                instructions[i] = 2
+                instructions[i] = 'r'
             elif directions[i] == 'west' and directions[i - 1] == 'north':
-                instructions[i] = 1
+                instructions[i] = 'l'
 
 
 def new_directions(finishx, finishy, bot_map_obj):
@@ -154,3 +155,8 @@ def new_directions(finishx, finishy, bot_map_obj):
 
     print(directionsNew)
     print(instructions)
+    i = 0
+    move_motor('h', 1)
+    while instructions[i]:
+        move_motor(instructions[i], 1)
+        i += 1
