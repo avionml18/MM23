@@ -170,12 +170,25 @@ def new_directions(finishx, finishy, bot_map_obj):
         j += 1
         i += 1
 
+    i = 0
 
-    print(newinstructions)
-    print(durations)
+    while i < len(newinstructions) and newinstructions[i] != 0:
+        i+= 1
+
+    newinstructionsfinalforreal = [0] * i
+    durationsfinalforread = [0] * i
+
+    i = 0
+    while i < len(newinstructions) and newinstructions[i] != 0:
+        newinstructionsfinalforreal[i] = newinstructions[i]
+        durationsfinalforread[i] = durations[i]
+        i+= 1
+
+    print(newinstructionsfinalforreal)
+    print(durationsfinalforread)
     i = 0
 
     move_motor('h', 1)
     while newinstructions[i] != 0:
-        move_motor(newinstructions[i], durations[i])
+        move_motor(newinstructionsfinalforreal[i], durationsfinalforread[i])
         i += 1

@@ -171,4 +171,17 @@ def move_motor(x,duration):
         print("please enter the defined data to continue.....")
 
 
-move_motor('r', 10)
+# Testing for meeting minimum speed
+move_motor('h', 1)
+move_motor('f',1)
+move_motor('l',1)
+
+# #Testing for correct Cornering right
+# move_motor('h',1)
+# move_motor('R',1)
+# move_motor('l',1)
+#
+# #Testing for correct Cornering left
+# move_motor('h',1)
+# move_motor('L',1)
+# move_motor('l',1)
