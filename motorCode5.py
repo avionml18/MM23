@@ -171,10 +171,10 @@ def move_motor(x,duration):
         print("please enter the defined data to continue.....")
 
 
-# Testing for meeting minimum speed
-move_motor('h', 1)
-move_motor('f',1)
-move_motor('l',1)
+# # Testing for meeting minimum speed
+# move_motor('h', 1)
+# move_motor('f',1)
+# move_motor('l',1)
 
 # #Testing for correct Cornering right
 # move_motor('h',1)
@@ -185,3 +185,30 @@ move_motor('l',1)
 # move_motor('h',1)
 # move_motor('L',1)
 # move_motor('l',1)
+
+# Test Sensor Readings
+front = 19
+right = 20
+left = 18
+
+GPIO.setup(front, GPIO.IN)
+GPIO.setup(left, GPIO.IN)
+GPIO.setup(right, GPIO.IN)
+
+while True:
+    if GPIO.input(front):
+        print("Wall Forward")
+    else:
+        print("Forward Empty")
+
+    if GPIO.input(left):
+        print("Wall Left")
+    else:
+        print("Left Empty")
+
+    if GPIO.input(right):
+        print("Wall Right")
+    else:
+        print("Right Empty")
+
+    time.sleep(5)
