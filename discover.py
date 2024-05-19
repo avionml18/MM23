@@ -2,7 +2,7 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  4/27/24
+Date (Update):  5/19/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """

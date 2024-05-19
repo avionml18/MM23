@@ -2,7 +2,7 @@
 File:           Bot.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  4/27/24
+Date (Update):  5/19/24
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Bot for discover.py program.
