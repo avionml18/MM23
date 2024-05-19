@@ -12,6 +12,7 @@ from Map import *
 from Colors import *
 from Bot import Orientation
 from enum import Enum
+from motorCode5 import *
 
 # Constants
 END = "end"
@@ -38,13 +39,12 @@ class Direction(Enum):
     RIGHT = 4
 
 
-def run_depth_search_algo(bot, maze):
+def run_depth_search_algo(bot):
     """
     This is where the Depth First Search algorithm and the arithmetic behind it is housed Depth-first search,
     bot goes -> intersection -> random direction -- if deadened --> go back to intersection -> repeat
 
     :param bot: The bot object
-    :param maze: the maze object (of the actual maze)
     :return: None(for now)
     """
     string_depth_title = "\nRUN DEPTH SEARCH ALGORITHM\n"
@@ -280,8 +280,34 @@ def run_depth_search_algo(bot, maze):
                     bot.turn_left()
                     bot.turn_left()
 
-        # Look in the actual maze for walls
-        north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
+        north_maze, south_maze, west_maze, east_maze = False
+
+        # Look in the actual maze for walls with the sensors
+        if bot.get_orientation() == Orientation.NORTH.value:
+            north_maze = GPIO.input(front)
+            east_maze = GPIO.input(right)
+            west_maze = GPIO.input(left)
+            # south_maze = False # I believe this won't cause any trouble
+
+        elif bot.get_orientation() == Orientation.SOUTH.value:
+            south_maze = GPIO.input(front)
+            east_maze = GPIO.input(left)
+            west_maze = GPIO.input(right)
+
+        elif bot.get_orientation() == Orientation.WEST.value:
+            west_maze = GPIO.input(front)
+            north_maze = GPIO.input(left)
+            south_maze = GPIO.input(right)
+
+        elif bot.get_orientation() == Orientation.EAST.value:
+            east_maze = GPIO.input(front)
+            north_maze = GPIO.input(right)
+            south_maze = GPIO.input(left)
+
+        else:
+            print("Error - THIS SHOULD NOT HAPPEN - return_to_start.py + DPS - sensor stuff")
+
+        # north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
 
         # Then tell the bot where to go in the actual maze
         # DIRECTION = UP
@@ -290,7 +316,7 @@ def run_depth_search_algo(bot, maze):
             if not north_maze:
                 # Go bot
                 x -= 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
                 move = True
 
             # If you hit the north wall -> update the north wall on the bot's map
@@ -305,7 +331,7 @@ def run_depth_search_algo(bot, maze):
             # If you don't hit the south wall -> move to that location in the algorithm
             if not south_maze:
                 x += 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
                 move = True
 
             # If you hit the south wall -> update the south wall on the bot's map
@@ -320,7 +346,7 @@ def run_depth_search_algo(bot, maze):
             # If you don't hit the west wall -> move to that location in the algorithm
             if not west_maze:
                 y -= 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
                 move = True
 
             # If you hit the west wall -> update the west wall on the bot's map
@@ -335,7 +361,7 @@ def run_depth_search_algo(bot, maze):
             # If you don't hit the east wall -> move to that location in the algorithm
             if not east_maze:
                 y += 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
                 move = True
 
             # If you hit the west wall -> update the west wall on the bot's map
@@ -381,7 +407,7 @@ def run_depth_search_algo(bot, maze):
     write_info(bot_map, x, y, possible_dir, 0, dir_to_go, END)
 
 
-def run_whole_maze_algo(bot, maze):
+def run_whole_maze_algo(bot):
     """
     This is where the Whole Maze algorithm and the arithmetic behind it is housed whole-maze is similar to
     depth-first search...We want to search as many possible paths and ideally get back to the start
@@ -389,7 +415,6 @@ def run_whole_maze_algo(bot, maze):
     Looks for intersection and keeps looking for unexplored mazes
 
     :param bot: The bot object
-    :param maze: The maze object (of the actual maze)
     :return: None(for now)
     """
 
@@ -455,7 +480,6 @@ def run_whole_maze_algo(bot, maze):
             if (y + 1) < DEFAULT_SIZE and not east:
                 if bot_map_obj[x, y + 1].get_distance() < distance:
                     possible_dir.append(Direction.RIGHT.name)
-
 
             # Update distance numbers so that they correspond to where the bot can actually go
             if not possible_dir:
@@ -548,8 +572,32 @@ def run_whole_maze_algo(bot, maze):
                         bot.turn_left()
                         bot.turn_left()
 
-            # Look in the actual maze for walls
-            north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
+            north_maze, south_maze, west_maze, east_maze = False
+
+            # Look in the actual maze for walls with the sensors
+            if bot.get_orientation() == Orientation.NORTH.value:
+                north_maze = GPIO.input(front)
+                east_maze = GPIO.input(right)
+                west_maze = GPIO.input(left)
+                # south_maze = False # I believe this won't cause any trouble
+
+            elif bot.get_orientation() == Orientation.SOUTH.value:
+                south_maze = GPIO.input(front)
+                east_maze = GPIO.input(left)
+                west_maze = GPIO.input(right)
+
+            elif bot.get_orientation() == Orientation.WEST.value:
+                west_maze = GPIO.input(front)
+                north_maze = GPIO.input(left)
+                south_maze = GPIO.input(right)
+
+            elif bot.get_orientation() == Orientation.EAST.value:
+                east_maze = GPIO.input(front)
+                north_maze = GPIO.input(right)
+                south_maze = GPIO.input(left)
+
+            else:
+                print("Error - THIS SHOULD NOT HAPPEN - return_to_start.py + Whole Maze - sensor stuff")
 
             # Then tell the bot where to go in the actual maze
             # DIRECTION = UP
@@ -558,7 +606,7 @@ def run_whole_maze_algo(bot, maze):
                 if not north_maze:
                     # Go bot
                     x -= 1
-                    bot.move(x, y, maze)
+                    bot.move(x, y)
 
                 # If you hit the north wall -> update the north wall on the bot's map
                 else:
@@ -575,7 +623,7 @@ def run_whole_maze_algo(bot, maze):
                 # If you don't hit the south wall -> move to that location in the algorithm
                 if not south_maze:
                     x += 1
-                    bot.move(x, y, maze)
+                    bot.move(x, y)
 
                 # If you hit the south wall -> update the south wall on the bot's map
                 else:
@@ -592,7 +640,7 @@ def run_whole_maze_algo(bot, maze):
                 # If you don't hit the west wall -> move to that location in the algorithm
                 if not west_maze:
                     y -= 1
-                    bot.move(x, y, maze)
+                    bot.move(x, y)
 
                 # If you hit the west wall -> update the west wall on the bot's map
                 else:
@@ -609,7 +657,7 @@ def run_whole_maze_algo(bot, maze):
                 # If you don't hit the east wall -> move to that location in the algorithm
                 if not east_maze:
                     y += 1
-                    bot.move(x, y, maze)
+                    bot.move(x, y)
 
                 # If you hit the west wall -> update the west wall on the bot's map
                 else:

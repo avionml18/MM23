@@ -19,18 +19,21 @@ enable_rts_whole = 13
 enable_rts_dfs = 12
 shutdown = 26
 
+str_start_time = "Starting Program at : " + time.localtime()
+write_to_file(str_start_time)
+
 # GPIO setup(s)
-print("")
+print("Setup : Speed Run")
 GPIO.setup(enable_speed_run, GPIO.IN)
-print("")
+print("Setup : Discover")
 GPIO.setup(enable_discover, GPIO.IN)
-print("")
+print("Setup : RTS_DFS ")
 GPIO.setup(enable_rts_dfs, GPIO.IN)
-print("")
+print("Setup : RTS_Whole")
 GPIO.setup(enable_rts_whole, GPIO.IN)
-print("")
+print("Setup : Shutdown")
 GPIO.setup(shutdown, GPIO.IN)
-print("")
+print("Finish Setup")
 
 # Made to cancel all threads once particular event happens (in this case, when gpio_enable is set to HIGH)
 stop_threads = threading.Event()
@@ -41,8 +44,8 @@ stop_threads = threading.Event()
 def function_one(pin):
     print("Running flood algo")
     global finishx, finishy
-    run_flood_algo(bot_1, maze_1)
-    finishx, finishy = maze_1.get_bot_loc()
+    run_flood_algo(bot_1)
+    finishx, finishy = bot_1.get_bot_loc()
     print("Flood Complete")
 
 
@@ -59,11 +62,11 @@ def function_two(pin):
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_three(pin):
-    global bot_1, maze_1, finishx, finishy
+    global bot_1, finishx, finishy
     print("Running Whole Maze Algo")
-    run_flood_algo(bot_1, maze_1)
-    finishx, finishy = maze_1.get_bot_loc()
-    run_whole_maze_algo(bot_1, maze_1)
+    run_flood_algo(bot_1)
+    finishx, finishy = bot_1.get_bot_loc()
+    run_whole_maze_algo(bot_1)
     print("Whole Maze Complete")
 
 
@@ -72,9 +75,9 @@ def function_three(pin):
 def function_four(pin):
     global finishx, finishy
     print("Running DFS")
-    run_flood_algo(bot_1, maze_1)
-    finishx, finishy = maze_1.get_bot_loc()
-    run_depth_search_algo(bot_1, maze_1)
+    run_flood_algo(bot_1)
+    finishx, finishy = bot_1.get_bot_loc()
+    run_depth_search_algo(bot_1)
     print("DFS Compelte")
 
 
@@ -138,4 +141,6 @@ def thread_loop():    # Creating threads
 
     # GPIO cleanup
     GPIO.cleanup()
-    print("")
+    print("Cleanup and program completed")
+    str_end_time = "Ending Program at : " + time.localtime()
+    write_to_file(str_end_time)

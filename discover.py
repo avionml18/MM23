@@ -154,6 +154,8 @@ def run_flood_algo(bot):
                     bot.turn_left()
                     bot.turn_left()
 
+        north_maze, south_maze, west_maze, east_maze = False
+
         # Look in the actual maze for walls with the sensors
         if bot.get_orientation() == Orientation.NORTH.value:
             north_maze = GPIO.input(front)
@@ -177,7 +179,7 @@ def run_flood_algo(bot):
             south_maze = GPIO.input(left)
 
         else:
-            print("Error - THIS SHOULD NOT HAPPEN - discover.py orientation stuff")
+            print("Error - THIS SHOULD NOT HAPPEN - discover.py sensor stuff")
 
         # north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
 
@@ -270,7 +272,7 @@ def run_flood_algo(bot):
 
 if __name__ == "__main__":
     global finishx, finishy
-    """ Things below this main will eventually be in the *driver.py" program. """
+    """ Things below WILL NOT WORK - due to "actual" maze interface """
 
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
@@ -292,7 +294,8 @@ if __name__ == "__main__":
         os.remove("MM23_log.txt")
 
     # Run the flood fill algorithm
-    run_flood_algo(bot_1, maze_1)
+    run_flood_algo(bot_1)
+    # run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
 
     # Run the whole maze algorithm
