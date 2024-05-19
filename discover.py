@@ -12,7 +12,7 @@ from SpeedRun import *
 from return_to_start import *
 
 
-def run_flood_algo(bot, maze):
+def run_flood_algo(bot):
     """
     This is where the Flood-Fill algorithm and the arithmetic behind it is housed
 
@@ -25,7 +25,7 @@ def run_flood_algo(bot, maze):
     (There are better Flood-Fill Algorithms)
 
     :param bot: the bot object
-    :param maze: the maze object (of the actual maze)
+    # :param maze: the maze object (of the actual maze)
     :return: None(for now)
     """
 
@@ -154,8 +154,32 @@ def run_flood_algo(bot, maze):
                     bot.turn_left()
                     bot.turn_left()
 
-        # Look in the actual maze for walls
-        north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
+        # Look in the actual maze for walls with the sensors
+        if bot.get_orientation() == Orientation.NORTH.value:
+            north_maze = GPIO.input(front)
+            east_maze = GPIO.input(right)
+            west_maze = GPIO.input(left)
+            # south_maze = False # I believe this won't cause any trouble
+
+        elif bot.get_orientation() == Orientation.SOUTH.value:
+            south_maze = GPIO.input(front)
+            east_maze = GPIO.input(left)
+            west_maze = GPIO.input(right)
+
+        elif bot.get_orientation() == Orientation.WEST.value:
+            west_maze = GPIO.input(front)
+            north_maze = GPIO.input(left)
+            south_maze = GPIO.input(right)
+
+        elif bot.get_orientation() == Orientation.EAST.value:
+            east_maze = GPIO.input(front)
+            north_maze = GPIO.input(right)
+            south_maze = GPIO.input(left)
+
+        else:
+            print("Error - THIS SHOULD NOT HAPPEN - discover.py orientation stuff")
+
+        # north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
 
         # Then tell the bot where to go in the actual maze
         # DIRECTION = UP
@@ -164,7 +188,7 @@ def run_flood_algo(bot, maze):
             if not north_maze:
                 # Go bot
                 x -= 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
 
             # If you hit the north wall -> update the north wall on the bot's map
             else:
@@ -181,7 +205,7 @@ def run_flood_algo(bot, maze):
             # If you don't hit the south wall -> move to that location in the algorithm
             if not south_maze:
                 x += 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
 
             # If you hit the south wall -> update the south wall on the bot's map
             else:
@@ -198,7 +222,7 @@ def run_flood_algo(bot, maze):
             # If you don't hit the west wall -> move to that location in the algorithm
             if not west_maze:
                 y -= 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
 
             # If you hit the west wall -> update the west wall on the bot's map
             else:
@@ -215,9 +239,9 @@ def run_flood_algo(bot, maze):
             # If you don't hit the east wall -> move to that location in the algorithm
             if not east_maze:
                 y += 1
-                bot.move(x, y, maze)
+                bot.move(x, y)
 
-            # If you hit the west wall -> update the west wall on the bot's map
+            # If you hit the east wall -> update the west wall on the bot's map
             else:
                 bot_map[x][y].set_east(east_maze)
                 dir_tuple = bot_map[x][y].get_walls()

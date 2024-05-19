@@ -195,20 +195,20 @@ GPIO.setup(front, GPIO.IN)
 GPIO.setup(left, GPIO.IN)
 GPIO.setup(right, GPIO.IN)
 
-while True:
-    if not GPIO.input(front):
-        print("Wall Forward")
-    else:
-        print("Forward Empty")
+# while True:
+#     if not GPIO.input(front):
+#         print("Wall Forward")
+#     else:
+#         print("Forward Empty")
+#
+#     if not GPIO.input(left):
+#         print("Wall Left")
+#     else:
+#         print("Left Empty")
+#
+#     if not GPIO.input(right):
+#         print("Wall Right")
+#     else:
+#         print("Right Empty")
 
-    if not GPIO.input(left):
-        print("Wall Left")
-    else:
-        print("Left Empty")
-
-    if not GPIO.input(right):
-        print("Wall Right")
-    else:
-        print("Right Empty")
-
-    time.sleep(5)
+time.sleep(5)

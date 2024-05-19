@@ -43,18 +43,18 @@ class Bot:
         self.bot_map: Map = Map()
         self.bot_map.make_bot_map()
 
-    def move(self, bot_new_x, bot_new_y, maze) -> None:
+    def move(self, bot_new_x, bot_new_y) -> None:
         """
-        Move will actually move the bot in the algorithm then in the actual maze
-        :param bot_new_x: x coordinate point for where the bot will move to (int)
-        :param bot_new_y: y coordinate point for where the bot will move to (int)
-        :param maze: maze object that represents the maze in the real world (Map())
-        :return: None
-        """
+            Move will actually move the bot in the algorithm then in the actual maze
+            :param bot_new_x: x coordinate point for where the bot will move to (int)
+            :param bot_new_y: y coordinate point for where the bot will move to (int)
+            :param maze: maze object that represents the maze in the real world (Map())
+            :return: None
+            """
         # This is for telling the motors to start going for a certain amount.
         # self.go = True
 
-        move_motor('f', 1) # duration for 1 second
+        move_motor('f', 1)  # duration for 1 second
 
         # Gather original location data and update the next square location
         bot_org_x, bot_org_y = self.bot_map.get_bot_loc()
@@ -65,28 +65,33 @@ class Bot:
         self.bot_map[bot_new_x, bot_new_y].set_explore(True)
         self.bot_map.set_bot_loc(x_y_coor)
 
-        # Repeat what you did in the algorithm for moving in the actual maze
-        """
-        I assume somewhere where here is where we tell the bot to move in a forward direction
-
-        There will be somewhere BEFORE this where we tell the bot to turn or orientate itself to the proper 
-            direction
-        """
-        maze.map[bot_org_x][bot_org_y].set_bot_here(False)
-        maze.map[bot_new_x][bot_new_y].set_bot_here(True)
-        maze.map[bot_new_x][bot_new_y].set_explore(True)  # Technically isn't necessary
-        maze.set_bot_loc(x_y_coor)
-
-    """
-    Don't think stop will be needed since in move, we will tell what the motors
-    will do and when to stop. However, if we want it to run stop as a NOP or something
-    else, that may be a good alternative
-    """
-
-    # def stop(self):
-    #     # This is for telling the bot to simply stop moving.
-    #     self.go = False
+    # def move(self, bot_new_x, bot_new_y, maze) -> None:
+    #     """
+    #     Move will actually move the bot in the algorithm then in the actual maze
+    #     :param bot_new_x: x coordinate point for where the bot will move to (int)
+    #     :param bot_new_y: y coordinate point for where the bot will move to (int)
+    #     :param maze: maze object that represents the maze in the real world (Map())
+    #     :return: None
+    #     """
+    #     # This is for telling the motors to start going for a certain amount.
+    #     # self.go = True
     #
+    #     move_motor('f', 1) # duration for 1 second
+    #
+    #     # Gather original location data and update the next square location
+    #     bot_org_x, bot_org_y = self.bot_map.get_bot_loc()
+    #     x_y_coor = bot_new_x, bot_new_y
+    #     self.bot_map[bot_org_x, bot_org_y].set_bot_here(False)
+    #     self.bot_map[bot_new_x, bot_new_y].set_bot_here(True)
+    #     """Does overwriting take long?"""
+    #     self.bot_map[bot_new_x, bot_new_y].set_explore(True)
+    #     self.bot_map.set_bot_loc(x_y_coor)
+    #
+    #     # Repeat what you did in the algorithm for moving in the actual maze
+    #     maze.map[bot_org_x][bot_org_y].set_bot_here(False)
+    #     maze.map[bot_new_x][bot_new_y].set_bot_here(True)
+    #     maze.map[bot_new_x][bot_new_y].set_explore(True)  # Technically isn't necessary
+    #     maze.set_bot_loc(x_y_coor)
 
     # Once direction is set, then tell the algo you're ready to go by calling function move
     def set_dir(self, up, down, left, right):
@@ -154,6 +159,8 @@ class Bot:
             print(Orientation.WEST.name)
         elif self.orientation == Orientation.EAST.value:
             print(Orientation.EAST.name)
+        else:
+            print("Error: Very Bad - Bot.py in print_orientation")
 
     def __str__(self):
         """

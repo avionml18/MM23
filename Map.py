@@ -2,7 +2,7 @@
 File:           Map.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  1/31/24
+Date (Update):  5/9/24
 Date (Done):
 Email:          alowery1@umbc.edu or loweryavion@gmail.com
 Description:    This program will have the class Map for discover.py program.
@@ -18,13 +18,13 @@ from Square import *
 # DEFAULT_SIZE = 4
 # FILENAME = ""
 
-# DEFAULT_SIZE = 6
-# FILENAME = "maze1.txt"
+DEFAULT_SIZE = 6
+FILENAME = "maze1.txt"
 
 # DEFAULT_SIZE = 8
 # FILENAME = ""
-DEFAULT_SIZE = 16
-FILENAME = "maze2.txt"
+# DEFAULT_SIZE = 16
+# FILENAME = "maze2.txt"
 
 string_stars = ['*' for i in range(DEFAULT_SIZE)] * 7
 
