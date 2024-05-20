@@ -1,11 +1,6 @@
 import time
-import RPi.GPIO as GPIO          
+import RPi.GPIO as GPIO
 from time import sleep
-
-# Global Straight and Turn Constants
-straight = .48
-turn = .4
-
 
 # Motor pin assignments for motor 1
 in1 = 24
@@ -21,7 +16,7 @@ temp2 = 1
 
 # Sensor initial state and GPIO pin (to be defined)
 sen1 = False
-sen1_pin = 19 
+sen1_pin = 19
 sen2 = False
 sen2_pin = 20
 sen3 = False
@@ -120,9 +115,8 @@ def move_motor(x,duration):
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.HIGH)
-        time.sleep(duration*straight)
+        time.sleep(duration)
         stopping()
-        time.sleep(2)
         temp1 = 1
 
     elif x == 'b':
@@ -131,35 +125,32 @@ def move_motor(x,duration):
         GPIO.output(in2, GPIO.HIGH)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
-        time.sleep(duration*straight)
+        time.sleep(duration)
         stopping()
-        time.sleep(2)
         temp1 = 0
 
-    elif x == 'L':
-        print("left turn")
+    elif x == 'R':
+        print("right turn")
         GPIO.output(in1, GPIO.LOW)
         GPIO.output(in2, GPIO.HIGH)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.HIGH)
-        time.sleep(duration*turn)
+        time.sleep(duration)
         stopping()
-        time.sleep(2)
 
-    elif x == 'R':
-        print("right turn")
+    elif x == 'L':
+        print("left turn")
         GPIO.output(in1, GPIO.HIGH)
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
-        time.sleep(duration*straight)
+        time.sleep(duration)
         stopping()
-        time.sleep(2)
 
     elif x == 'l':
         print("low")
-        p.ChangeDutyCycle(18)
-        p2.ChangeDutyCycle(20)
+        p.ChangeDutyCycle(25)
+        p2.ChangeDutyCycle(25)
 
     elif x == 'm':
         print("medium")
@@ -199,27 +190,3 @@ GPIO.setup(front, GPIO.IN)
 GPIO.setup(left, GPIO.IN)
 GPIO.setup(right, GPIO.IN)
 
-temp = 0
-while True:
-    temp += 1
-    if not GPIO.input(front):
-        print("Wall Forward")
-    else:
-        print("Forward Empty")
-
-    if not GPIO.input(left):
-        print("Wall Left")
-    else:
-        print("Left Empty")
-
-    if not GPIO.input(right):
-        print("Wall Right")
-    else:
-        print("Right Empty")
-
-    if temp == 4:
-        break
-
-    time.sleep(5)
-
-print("Unit Test Demo Complete")

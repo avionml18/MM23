@@ -5,9 +5,11 @@
 # Importing required libraries
 import threading
 import time
-from discover import *
+from old_discover import *
 from SpeedRun import *
-from return_to_start import *
+from old_rts import *
+import RPi.GPIO as GPIO
+
 
 enable_speed_run = 6
 enable_discover = 5
@@ -61,11 +63,11 @@ def function_two(pin):
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_three(pin):
-    # global bot_1, maze_1, finishx, finishy
+    global finishx, finishy
     print("Running Whole Maze Algo")
-    # run_flood_algo(bot_1, maze_1)
-    # finishx, finishy = maze_1.get_bot_loc()
-    # run_whole_maze_algo(bot_1, maze_1)
+    run_flood_algo(bot_1, maze_1)
+    finishx, finishy = maze_1.get_bot_loc()
+    run_whole_maze_algo(bot_1, maze_1)
     print("Whole Maze Complete")
 
 
@@ -86,56 +88,62 @@ def thread_loop_sim():    # Creating threads
     # args have to be tuple thus the syntax "(arg,)" is meant to denote a tuple with an argument in index 0 and none
     #   in index 1: (arg, None)
 
-    print("Threading Test Start")
     # Starting threads
     lock = 0
-    temp = 0
     # "Standby Mode" loop. Continuously checks for GPIO mode selection.
-    while not temp == 10:
-        if temp % 4 == 0 and lock == 0:
+    while not GPIO.input(shutdown):
+        if GPIO.input(enable_discover) and lock == 0:
             lock = 1
             thread_one = threading.Thread(target=function_one, args=(enable_discover,))
             thread_one.start()
 
-        elif temp % 3 == 0 and lock == 0:
+        if GPIO.input(enable_speed_run) and lock == 0:
             lock = 2
             thread_two = threading.Thread(target=function_two, args=(enable_speed_run,))
             thread_two.start()
 
-        elif temp % 2 == 0 and lock == 0:
+        if GPIO.input(enable_rts_whole) and lock == 0:
             lock = 3
             thread_three = threading.Thread(target=function_three, args=(enable_rts_whole,))
             thread_three.start()
 
-        elif lock == 0:
+        if GPIO.input(enable_rts_dfs) and lock == 0:
             lock = 4
             thread_four = threading.Thread(target=function_four, args=(enable_rts_dfs,))
             thread_four.start()
 
         if lock == 1:
-            time.sleep(3)
-            print("Stopping Discover")
-            thread_one.join()
-            lock = 0
+            if not GPIO.input(enable_discover):
+                print("Stopping Discover")
+                thread_one.join()
+                lock = 0
         elif lock == 2:
-            time.sleep(3)
-            print("Stopping Speedrun")
-            thread_two.join()
-            lock = 0
+            if not GPIO.input(enable_speed_run):
+                print("Stopping Speedrun")
+                thread_two.join()
+                lock = 0
         elif lock == 3:
-            time.sleep(3)
-            print("Stopping Whole Maze")
-            thread_three.join()
-            lock = 0
+            if not GPIO.input(enable_rts_whole):
+                print("Stopping Whole Maze")
+                thread_three.join()
+                lock = 0
         elif lock == 4:
-            time.sleep(3)
-            print("Stopping DFS")
-            thread_four.join()
-            lock = 0
+            if not GPIO.input(enable_rts_dfs):
+                print("Stopping DFS")
+                thread_four.join()
+                lock = 0
+        time.sleep(0.5)
+    # Creating + Starting cancel thread checker
+    gpio_monitor_threads = threading.Thread(target=gpio_enable)
+    gpio_monitor_threads.start()
 
-        temp += 1
+    # Joining all threads, end of threading
+    gpio_monitor_threads.join()
 
-    print("Threading Done")
-
+    # GPIO cleanup
+    GPIO.cleanup()
+    print("Cleanup and program completed")
+    str_end_time = "Ending Program at : " + time.localtime()
+    write_to_file(str_end_time)
 
 thread_loop_sim()
