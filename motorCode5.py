@@ -45,6 +45,15 @@ GPIO.output(in3, GPIO.LOW)
 GPIO.output(in4, GPIO.LOW)
 p2 = GPIO.PWM(en2, 1000)  # Setup PWM with 1000Hz frequency
 
+# Pins for the starting square of the bot
+NE = 8
+NW = 9
+SE = 10
+SW = 11
+GPIO.setup(NE, GPIO.IN)
+GPIO.setup(NW, GPIO.IN)
+GPIO.setup(SE, GPIO.IN)
+GPIO.setup(SW, GPIO.IN)
 
 ###
 #GPIO.setup(sen1_pin, GPIO.OUT)
