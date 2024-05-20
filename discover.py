@@ -91,7 +91,7 @@ def run_flood_algo(bot):
                 west_maze = bot_map[x][y].get_west_wall()
             
             else:
-                print("Error - THIS SHOULD NOT HAPPEN - discover.py sensor stuff")
+                write_to_file("Error - THIS SHOULD NOT HAPPEN - discover.py sensor stuff")
 
             # Gather wall data -> update the walls on the bot's map
             bot_map[x][y].set_north(north_maze)
