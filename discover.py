@@ -2,7 +2,7 @@
 File:           discover.py
 Author:         Avion Lowery
 Date (Start):   10/20/23
-Date (Update):  4/27/24
+Date (Update):  5/19/24
 Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
@@ -54,9 +54,74 @@ def run_flood_algo(bot, maze):
     ###############################    Bot's Maze Logic     ###############################
 
     while distance != 0:
-        possible_dir = []
+        north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
+
+        # # Look in the actual maze for walls with the sensors
+        # if bot.get_orientation() == Orientation.NORTH.value:
+        #     north_maze = GPIO.input(front)
+        #     east_maze = GPIO.input(right)
+        #     west_maze = GPIO.input(left)
+        #     south_maze = bot_map[x][y].get_south_wall()
+        #
+        # elif bot.get_orientation() == Orientation.SOUTH.value:
+        #     south_maze = GPIO.input(front)
+        #     east_maze = GPIO.input(left)
+        #     west_maze = GPIO.input(right)
+        #     north_maze = bot_map[x][y].get_north_wall()
+        #
+        # elif bot.get_orientation() == Orientation.WEST.value:
+        #     west_maze = GPIO.input(front)
+        #     north_maze = GPIO.input(left)
+        #     south_maze = GPIO.input(right)
+        #     east_maze = bot_map[x][y].get_east_wall()
+        #
+        # elif bot.get_orientation() == Orientation.EAST.value:
+        #     east_maze = GPIO.input(front)
+        #     north_maze = GPIO.input(right)
+        #     south_maze = GPIO.input(left)
+        #     west_maze = bot_map[x][y].get_west_wall()
+        #
+        # else:
+        #     print("Error - THIS SHOULD NOT HAPPEN - discover.py sensor stuff")
+
+        # Gather wall data -> update the walls on the bot's map
+        bot_map[x][y].set_north(north_maze)
+        # Set up to set parallel walls
+        dir_tuple = bot_map[x][y].get_walls()
+        x_y_coor = (x, y)
+        bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+        # Update distance numbers for the bot and go again
+        bot_map_obj.set_distance_nums(x, y)  # *********** Hope this works
+
+        bot_map[x][y].set_south(south_maze)
+        # Set up to set parallel walls
+        dir_tuple = bot_map[x][y].get_walls()
+        x_y_coor = (x, y)
+        bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+        # Update distance numbers for the bot and go again
+        bot_map_obj.set_distance_nums(x, y)  # *********** Hope this works
+        bot_map[x][y].set_west(west_maze)
+        # Set up to set parallel walls
+        dir_tuple = bot_map[x][y].get_walls()
+        x_y_coor = (x, y)
+        bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+        # Update distance numbers for the bot and go again
+        bot_map_obj.set_distance_nums(x, y)  # *********** Hope this works
+        bot_map[x][y].set_east(east_maze)
+        # Set up to set parallel walls
+        dir_tuple = bot_map[x][y].get_walls()
+        x_y_coor = (x, y)
+        bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
+
+        # Update distance numbers for the bot and go again
+        bot_map_obj.set_distance_nums(x, y)  # *********** Hope this works
+
         north, south, west, east = bot_map[x][y].get_walls()
 
+        possible_dir = []
         # Analyze possible directions (based on distance numbers):
         if -1 < (x - 1) and not north:
             if bot_map_obj[x - 1, y].get_distance() < distance:
@@ -154,78 +219,31 @@ def run_flood_algo(bot, maze):
                     bot.turn_left()
                     bot.turn_left()
 
-        # Look in the actual maze for walls
-        north_maze, south_maze, west_maze, east_maze = maze.map[x][y].get_walls()
-
         # Then tell the bot where to go in the actual maze
         # DIRECTION = UP
         if dir_to_go == Direction.UP.name:
             # If you don't hit the north wall -> move to that location in the algorithm
-            if not north_maze:
-                # Go bot
-                x -= 1
-                bot.move(x, y, maze)
-
-            # If you hit the north wall -> update the north wall on the bot's map
-            else:
-                bot_map[x][y].set_north(north_maze)
-                dir_tuple = bot_map[x][y].get_walls()
-                x_y_coor = x, y
-                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
-
-                # Update distance numbers for the bot and go again
-                bot_map_obj.set_distance_nums(x, y)
+            # Go bot
+            x -= 1
+            bot.move(x, y, maze)
 
         # DIRECTION = DOWN
         elif dir_to_go == Direction.DOWN.name:
             # If you don't hit the south wall -> move to that location in the algorithm
-            if not south_maze:
-                x += 1
-                bot.move(x, y, maze)
-
-            # If you hit the south wall -> update the south wall on the bot's map
-            else:
-                bot_map[x][y].set_south(south_maze)
-                dir_tuple = bot_map[x][y].get_walls()
-                x_y_coor = x, y
-                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
-
-                # Update distance numbers for the bot and go again
-                bot_map_obj.set_distance_nums(x, y)
+            x += 1
+            bot.move(x, y, maze)
 
         # DIRECTION = LEFT
         elif dir_to_go == Direction.LEFT.name:
             # If you don't hit the west wall -> move to that location in the algorithm
-            if not west_maze:
-                y -= 1
-                bot.move(x, y, maze)
-
-            # If you hit the west wall -> update the west wall on the bot's map
-            else:
-                bot_map[x][y].set_west(west_maze)
-                dir_tuple = bot_map[x][y].get_walls()
-                x_y_coor = x, y
-                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
-
-                # Update distance numbers for the bot and go again
-                bot_map_obj.set_distance_nums(x, y)
+            y -= 1
+            bot.move(x, y, maze)
 
         # DIRECTION = RIGHT
         elif dir_to_go == Direction.RIGHT.name:
             # If you don't hit the east wall -> move to that location in the algorithm
-            if not east_maze:
-                y += 1
-                bot.move(x, y, maze)
-
-            # If you hit the west wall -> update the west wall on the bot's map
-            else:
-                bot_map[x][y].set_east(east_maze)
-                dir_tuple = bot_map[x][y].get_walls()
-                x_y_coor = x, y
-                bot_map_obj.check_set_walls(dir_tuple, x_y_coor)
-
-                # Update distance numbers for the bot and go again
-                bot_map_obj.set_distance_nums(x, y)
+            y += 1
+            bot.move(x, y, maze)
 
         distance = bot_map[x][y].get_distance()
         """Not sure if we need this since you can't get out of the while loop without distance being equal to 0
@@ -245,7 +263,8 @@ def run_flood_algo(bot, maze):
 """Make sure to wait or sleep before the bot goes back to try to find the start"""
 
 if __name__ == "__main__":
-    """ Things below this main will eventually be in the *driver.py" program. """
+    global finishx, finishy
+    """ Things below WILL NOT WORK - due to "actual" maze interface """
 
     # Make an instance of Map to represent the actual maze
     maze_1 = Map()
@@ -268,6 +287,7 @@ if __name__ == "__main__":
 
     # Run the flood fill algorithm
     run_flood_algo(bot_1, maze_1)
+    # run_flood_algo(bot_1, maze_1)
     finishx, finishy = maze_1.get_bot_loc()
 
     # Run the whole maze algorithm

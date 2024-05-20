@@ -18,14 +18,14 @@ from Square import *
 # DEFAULT_SIZE = 4
 # FILENAME = ""
 
-# DEFAULT_SIZE = 6
-# FILENAME = "maze1.txt"
+DEFAULT_SIZE = 6
+FILENAME = "maze1.txt"
 
 # DEFAULT_SIZE = 8
 # FILENAME = ""
 
-DEFAULT_SIZE = 16
-FILENAME = "maze2.txt"
+# DEFAULT_SIZE = 16
+# FILENAME = "maze2.txt"
 
 string_stars = ['*' for i in range(DEFAULT_SIZE)] * 7
 
