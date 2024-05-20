@@ -10,7 +10,7 @@ Description:    This file will simulate the bot traversing back from the center 
 # import os.path
 from Map import *
 from Colors import *
-from Bot import Orientation
+from BotDemo import Orientation
 from enum import Enum
 
 # Constants

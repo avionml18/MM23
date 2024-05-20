@@ -144,3 +144,5 @@ def thread_loop():    # Creating threads
     print("Cleanup and program completed")
     str_end_time = "Ending Program at : " + time.localtime()
     write_to_file(str_end_time)
+
+thread_loop_sim()
