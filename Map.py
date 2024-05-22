@@ -104,6 +104,16 @@ class Map:
             # Choice are (1) Top Left, (2) Bottom Left, (3) Top Right, (4) Bottom Right
             list_loc = [(0, 0), (0, DEFAULT_SIZE - 1), (DEFAULT_SIZE - 1, 0), (DEFAULT_SIZE - 1, DEFAULT_SIZE - 1)]
 
+           # x, y = 0, 0
+            #if GPIO.input(NW):
+            #    x, y = list_loc[0]
+            #elif GPIO.input(NE):
+            #    x, y = list_loc[2]
+            #elif GPIO.input(SW):
+            #    x, y = list_loc[1]
+            #elif GPIO.input(SE):
+            #    x, y = list_loc[3]
+            
             x, y = random.choice(list_loc)
             self.map[x][y].set_start(True)
             self.map[x][y].set_explore(True)

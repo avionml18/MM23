@@ -2,6 +2,11 @@ import time
 import RPi.GPIO as GPIO
 from time import sleep
 
+# Global Straight and Turn Constants
+straight = .48
+turn = .36
+turnR = .3
+
 # Motor pin assignments for motor 1
 in1 = 24
 in2 = 23
@@ -115,8 +120,9 @@ def move_motor(x,duration):
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.HIGH)
-        time.sleep(duration)
+        time.sleep(duration*straight)
         stopping()
+        time.sleep(2)
         temp1 = 1
 
     elif x == 'b':
@@ -125,31 +131,34 @@ def move_motor(x,duration):
         GPIO.output(in2, GPIO.HIGH)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
-        time.sleep(duration)
+        time.sleep(duration*straight)
         stopping()
+        time.sleep(2)
         temp1 = 0
 
-    elif x == 'R':
-        print("right turn")
+    elif x == 'L':
+        print("left turn")
         GPIO.output(in1, GPIO.LOW)
         GPIO.output(in2, GPIO.HIGH)
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.HIGH)
-        time.sleep(duration)
+        time.sleep(duration*turn)
         stopping()
+        time.sleep(2)
 
-    elif x == 'L':
-        print("left turn")
+    elif x == 'R':
+        print("right turn")
         GPIO.output(in1, GPIO.HIGH)
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
-        time.sleep(duration)
+        time.sleep(duration*turn)
         stopping()
+        time.sleep(2)
 
     elif x == 'l':
         print("low")
-        p.ChangeDutyCycle(25)
+        p.ChangeDutyCycle(23)
         p2.ChangeDutyCycle(25)
 
     elif x == 'm':
@@ -181,12 +190,5 @@ move_motor('R',1)
 #Testing for correct Cornering left
 move_motor('L',1)
 
-# Test Sensor Readings
-front = 19
-right = 20
-left = 18
 
-GPIO.setup(front, GPIO.IN)
-GPIO.setup(left, GPIO.IN)
-GPIO.setup(right, GPIO.IN)
 

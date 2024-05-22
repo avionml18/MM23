@@ -7,9 +7,9 @@ Email:          alowery1@umbc.edu or avion.m.lowery@gmail.com
 Description:    This file will simulate the bot traversing to the center of the maze through terminal
 """
 import os.path
-from Bot import *
-from SpeedRun import *
-from return_to_start import *
+from BotDemo import *
+from SpeedrunDemo import *
+from old_rts import *
 
 
 def run_flood_algo(bot, maze):

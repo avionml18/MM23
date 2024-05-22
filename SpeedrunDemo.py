@@ -5,7 +5,6 @@
 # currpath: shortest path to the current square
 # output: updated ShortestPath value of all explored squares
 from Map import *
-from motorCode5 import *
 
 def speedrun(xcoord, ycoord, currpath, maze, direction, instruction):
     straight_weight = 1
@@ -105,21 +104,21 @@ def generate_instructions(xcoord, ycoord, maze, directions, instructions):
             if directions[i] == directions[i - 1]:
                 instructions[i] = 'f'
             elif directions[i] == 'north' and directions[i - 1] == 'west':
-                instructions[i] = 'R'
+                instructions[i] = 'r'
             elif directions[i] == 'north' and directions[i - 1] == 'east':
-                instructions[i] = 'L'
+                instructions[i] = 'l'
             elif directions[i] == 'south' and directions[i - 1] == 'east':
-                instructions[i] = 'R'
+                instructions[i] = 'r'
             elif directions[i] == 'south' and directions[i - 1] == 'west':
-                instructions[i] = 'L'
+                instructions[i] = 'l'
             elif directions[i] == 'east' and directions[i - 1] == 'north':
-                instructions[i] = 'R'
+                instructions[i] = 'r'
             elif directions[i] == 'east' and directions[i - 1] == 'south':
-                instructions[i] = 'L'
+                instructions[i] = 'l'
             elif directions[i] == 'west' and directions[i - 1] == 'south':
-                instructions[i] = 'R'
+                instructions[i] = 'r'
             elif directions[i] == 'west' and directions[i - 1] == 'north':
-                instructions[i] = 'L'
+                instructions[i] = 'l'
 
 
 def new_directions(finishx, finishy, bot_map_obj):
@@ -165,8 +164,6 @@ def new_directions(finishx, finishy, bot_map_obj):
         while i+1 < len(instructions) and instructions[i+1] == newinstructions[j]:
             i += 1
             dur += 1
-        if i != 0 and instructions[i - 1] != 'f' and instructions[i] == 'f':
-            dur += 1
         durations[j] = dur
         dur = 1
         j += 1
@@ -189,18 +186,3 @@ def new_directions(finishx, finishy, bot_map_obj):
     print(newinstructionsfinalforreal)
     print(durationsfinalforread)
     i = 0
-
-    # move_motor('h', 1)
-    temporary = 0
-    while newinstructions[i] != 0:
-        if durationsfinalforread[i] > 3:
-            move_motor(newinstructionsfinalforreal[i], durationsfinalforread[i]+temporary-0.4)
-        else:
-            move_motor(newinstructionsfinalforreal[i], durationsfinalforread[i]+temporary)
-        if newinstructionsfinalforreal[i] == 'L':
-            temporary = 1
-        else:
-            temporary = 0
-        i += 1
-    if newinstructionsfinalforreal[i-1] != 'f':
-        move_motor('f',1)

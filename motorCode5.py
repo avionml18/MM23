@@ -3,9 +3,13 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 # Global Straight and Turn Constants
-straight = .48
-turn = .4
+straight = .34
+turn = .31
 
+# Declaring sensor pins
+front = 19
+right = 20
+left = 18
 
 # Motor pin assignments for motor 1
 in1 = 24
@@ -45,18 +49,25 @@ GPIO.output(in3, GPIO.LOW)
 GPIO.output(in4, GPIO.LOW)
 p2 = GPIO.PWM(en2, 1000)  # Setup PWM with 1000Hz frequency
 
+# Pins for the starting square of the bot
+NE = 8
+NW = 9
+SE = 10
+SW = 11
+GPIO.setup(NE, GPIO.IN)
+GPIO.setup(NW, GPIO.IN)
+GPIO.setup(SE, GPIO.IN)
+GPIO.setup(SW, GPIO.IN)
 
 ###
-#GPIO.setup(sen1_pin, GPIO.OUT)
-
-#GPIO.output(sen1_pin, GPIO.LOW)
-
+GPIO.setup(front, GPIO.IN)
+GPIO.setup(left, GPIO.IN)
+GPIO.setup(right, GPIO.IN)
 ###
 
 # Start PWM with 25% duty cycle
 p.start(25)
 p2.start(25)
-
 
 def stopping():
     GPIO.output(in1, GPIO.LOW)
@@ -122,7 +133,7 @@ def move_motor(x,duration):
         GPIO.output(in4, GPIO.HIGH)
         time.sleep(duration*straight)
         stopping()
-        time.sleep(2)
+        time.sleep(5)
         temp1 = 1
 
     elif x == 'b':
@@ -133,7 +144,7 @@ def move_motor(x,duration):
         GPIO.output(in4, GPIO.LOW)
         time.sleep(duration*straight)
         stopping()
-        time.sleep(2)
+        time.sleep(5)
         temp1 = 0
 
     elif x == 'L':
@@ -144,7 +155,7 @@ def move_motor(x,duration):
         GPIO.output(in4, GPIO.HIGH)
         time.sleep(duration*turn)
         stopping()
-        time.sleep(2)
+        time.sleep(5)
 
     elif x == 'R':
         print("right turn")
@@ -152,9 +163,9 @@ def move_motor(x,duration):
         GPIO.output(in2, GPIO.LOW)
         GPIO.output(in3, GPIO.HIGH)
         GPIO.output(in4, GPIO.LOW)
-        time.sleep(duration*straight)
+        time.sleep(duration*turn)
         stopping()
-        time.sleep(2)
+        time.sleep(5)
 
     elif x == 'l':
         print("low")
@@ -180,46 +191,3 @@ def move_motor(x,duration):
         print("please enter the defined data to continue.....")
 
 
-# Testing for meeting minimum speed
-move_motor('l', 1)
-move_motor('f',1)
-
-#Testing for correct Cornering right
-move_motor('R',1)
-
-#Testing for correct Cornering left
-move_motor('L',1)
-
-# Test Sensor Readings
-front = 19
-right = 20
-left = 18
-
-GPIO.setup(front, GPIO.IN)
-GPIO.setup(left, GPIO.IN)
-GPIO.setup(right, GPIO.IN)
-
-temp = 0
-while True:
-    temp += 1
-    if not GPIO.input(front):
-        print("Wall Forward")
-    else:
-        print("Forward Empty")
-
-    if not GPIO.input(left):
-        print("Wall Left")
-    else:
-        print("Left Empty")
-
-    if not GPIO.input(right):
-        print("Wall Right")
-    else:
-        print("Right Empty")
-
-    if temp == 4:
-        break
-
-    time.sleep(5)
-
-print("Unit Test Demo Complete")

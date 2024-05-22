@@ -13,14 +13,14 @@ from return_to_start import *
 GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
 
 # setting pins for different operational modes
-enable_speed_run = 6
+enable_speed_run = 16
 enable_discover = 5
 enable_rts_whole = 13
 enable_rts_dfs = 12
 shutdown = 26
 
-str_start_time = "Starting Program at : " + time.localtime()
-write_to_file(str_start_time)
+# str_start_time = "Starting Program at : " + time.localtime()
+# write_to_file(str_start_time)
 
 # GPIO setup(s)
 print("Setup : Speed Run")
@@ -38,20 +38,33 @@ print("Finish Setup")
 # Made to cancel all threads once particular event happens (in this case, when gpio_enable is set to HIGH)
 stop_threads = threading.Event()
 
+bot_1 = Bot()
+bot_map_obj = bot_1.bot_map
+startx = 0
+starty = 0
+bot_map_obj.set_bot_loc((startx,starty))
+
+is_maze = False
+bot_map_obj.make_starting_square(is_maze)
+
+# startx = 5
+# starty = 5
 
 # def function_one(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_one(pin):
+    time.sleep(2)
     print("Running flood algo")
     global finishx, finishy
     run_flood_algo(bot_1)
-    finishx, finishy = bot_1.get_bot_loc()
+    finishx, finishy = bot_map_obj.get_bot_loc()
     print("Flood Complete")
 
 
 # def function_two(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_two(pin):
+    time.sleep(2)
     global starty, startx, bot_map_obj
     print("Running Speedrun")
     speedrun(starty, startx, 0, bot_map_obj, "north", "straight")  # call from starting square with curr-path 0
@@ -62,6 +75,7 @@ def function_two(pin):
 # def function_three(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_three(pin):
+    time.sleep(2)
     global bot_1, finishx, finishy
     print("Running Whole Maze Algo")
     run_flood_algo(bot_1)
@@ -73,6 +87,7 @@ def function_three(pin):
 # def function_four(<param>)
 # <param>: GPIO Pin, could be used to send a pin to determine whether to run the Bot's mode
 def function_four(pin):
+    time.sleep(2)
     global finishx, finishy
     print("Running DFS")
     run_flood_algo(bot_1)
@@ -101,15 +116,15 @@ def thread_loop():    # Creating threads
             thread_two = threading.Thread(target=function_two, args=(enable_speed_run,))
             thread_two.start()
 
-        if GPIO.input(enable_rts_whole) and lock == 0:
-            lock = 3
-            thread_three = threading.Thread(target=function_three, args=(enable_rts_whole,))
-            thread_three.start()
+        # if GPIO.input(enable_rts_whole) and lock == 0:
+        #     lock = 3
+        #     thread_three = threading.Thread(target=function_three, args=(enable_rts_whole,))
+        #     thread_three.start()
 
-        if GPIO.input(enable_rts_dfs) and lock == 0:
-            lock = 4
-            thread_four = threading.Thread(target=function_four, args=(enable_rts_dfs,))
-            thread_four.start()
+        # if GPIO.input(enable_rts_dfs) and lock == 0:
+        #     lock = 4
+        #     thread_four = threading.Thread(target=function_four, args=(enable_rts_dfs,))
+        #    thread_four.start()
 
         if lock == 1:
             if not GPIO.input(enable_discover):
@@ -133,14 +148,16 @@ def thread_loop():    # Creating threads
                 lock = 0
         time.sleep(0.5)
     # Creating + Starting cancel thread checker
-    gpio_monitor_threads = threading.Thread(target=gpio_enable)
-    gpio_monitor_threads.start()
+    # gpio_monitor_threads = threading.Thread(target=gpio_enable)
+    # gpio_monitor_threads.start()
 
     # Joining all threads, end of threading
-    gpio_monitor_threads.join()
+    # gpio_monitor_threads.join()
 
     # GPIO cleanup
     GPIO.cleanup()
-    print("Cleanup and program completed")
-    str_end_time = "Ending Program at : " + time.localtime()
-    write_to_file(str_end_time)
+    # print("Cleanup and program completed")
+    # str_end_time = "Ending Program at : " + time.localtime()
+    # write_to_file(str_end_time)
+
+thread_loop()
